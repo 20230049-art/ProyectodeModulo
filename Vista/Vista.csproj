@@ -46,14 +46,89 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Form1.cs">
+    <Compile Include="GerenteClientes\frmClientescs.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <Compile Include="GerenteClientes\frmClientescs.Designer.cs">
+      <DependentUpon>frmClientescs.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GerenteInventario\frmInventario.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GerenteInventario\frmInventario.Designer.cs">
+      <DependentUpon>frmInventario.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GerenteMaquinaria\frmMaquinaria.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GerenteMaquinaria\frmMaquinaria.Designer.cs">
+      <DependentUpon>frmMaquinaria.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GerentePedidos\frmPedidos.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GerentePedidos\frmPedidos.Designer.cs">
+      <DependentUpon>frmPedidos.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GerenteReportes\frmReportes.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GerenteReportes\frmReportes.Designer.cs">
+      <DependentUpon>frmReportes.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GerenteUsuario\frmUsuario.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GerenteUsuario\frmUsuario.Designer.cs">
+      <DependentUpon>frmUsuario.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Iniciar Sesion\frmIniciarSesion.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Iniciar Sesion\frmIniciarSesion.Designer.cs">
+      <DependentUpon>frmIniciarSesion.cs</DependentUpon>
+    </Compile>
+    <Compile Include="InicioGerente\frmInicioGerente.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="InicioGerente\frmInicioGerente.Designer.cs">
+      <DependentUpon>frmInicioGerente.cs</DependentUpon>
+    </Compile>
+    <Compile Include="InicioGerente\frmInicioGerenteSinMenu.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="InicioGerente\frmInicioGerenteSinMenu.Designer.cs">
+      <DependentUpon>frmInicioGerenteSinMenu.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="GerenteClientes\frmClientescs.resx">
+      <DependentUpon>frmClientescs.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GerenteInventario\frmInventario.resx">
+      <DependentUpon>frmInventario.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GerenteMaquinaria\frmMaquinaria.resx">
+      <DependentUpon>frmMaquinaria.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GerentePedidos\frmPedidos.resx">
+      <DependentUpon>frmPedidos.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GerenteReportes\frmReportes.resx">
+      <DependentUpon>frmReportes.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GerenteUsuario\frmUsuario.resx">
+      <DependentUpon>frmUsuario.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Iniciar Sesion\frmIniciarSesion.resx">
+      <DependentUpon>frmIniciarSesion.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="InicioGerente\frmInicioGerente.resx">
+      <DependentUpon>frmInicioGerente.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="InicioGerente\frmInicioGerenteSinMenu.resx">
+      <DependentUpon>frmInicioGerenteSinMenu.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -62,6 +137,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -76,5 +152,15 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Captura de pantalla 2026-09-10 185612.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\chimenea-de-la-casa.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\gente-pic.png" />
+  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
