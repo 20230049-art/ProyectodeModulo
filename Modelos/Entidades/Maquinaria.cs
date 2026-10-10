@@ -275,5 +275,31 @@ namespace Modelos.Entidades
                 throw new Exception("Error al restaurar la maquinaria: " + ex.Message, ex);
             }
         }
+
+        public static DataTable ObtenerMaquinariaParaCombo()
+        {
+            DataTable dt = new DataTable();
+            try
+            {
+                using (SqlConnection connection = Conexion.Conectar())
+                {
+                    if (connection == null) return dt;
+
+                    string comando = "SELECT IdMaquinaria, NombreMaquinaria " +
+                                     "FROM Maquinaria WHERE EliminadoMaquinaria = 0 ORDER BY NombreMaquinaria;";
+
+                    using (SqlDataAdapter ad = new SqlDataAdapter(comando, connection))
+                    {
+                        ad.Fill(dt);
+                    }
+                }
+            }
+            catch (SqlException ex)
+            {
+                MessageBox.Show("Error al obtener maquinaria: " + ex.Message,
+                        "ERROR-SQL-100", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            return dt;
+        }
     }
 }

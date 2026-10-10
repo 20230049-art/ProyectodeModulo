@@ -995,5 +995,23 @@ namespace Vista
                 pill.Invalidate();
             }
         }
+
+        private void InitializeComponent()
+        {
+            this.SuspendLayout();
+            // 
+            // frmInicio
+            // 
+            this.ClientSize = new System.Drawing.Size(282, 253);
+            this.Name = "frmInicio";
+            this.Load += new System.EventHandler(this.frmInicio_Load);
+            this.ResumeLayout(false);
+
+        }
+
+        private void frmInicio_Load(object sender, EventArgs e)
+        {
+
+        }
     }
 }

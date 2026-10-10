@@ -128,7 +128,7 @@ namespace Vista.GerenteClientes
                 panelCliente.Height = pnlContenedor.Height;
                 panelCliente.BorderStyle = pnlContenedor.BorderStyle;
                 panelCliente.BackColor = pnlContenedor.BackColor;
-                panelCliente.Margin = new Padding(6);
+                panelCliente.Margin = new Padding(8);
                 panelCliente.Tag = fila["IdCliente"];
 
                 Label lblNombre = new Label();

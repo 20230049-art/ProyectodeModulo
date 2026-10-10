@@ -33,7 +33,7 @@
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.btnAgregar = new System.Windows.Forms.Button();
             this.label10 = new System.Windows.Forms.Label();
-            this.label11 = new System.Windows.Forms.Label();
+            this.Telefono = new System.Windows.Forms.Label();
             this.label12 = new System.Windows.Forms.Label();
             this.label13 = new System.Windows.Forms.Label();
             this.label14 = new System.Windows.Forms.Label();
@@ -91,7 +91,7 @@
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 192F));
             this.tableLayoutPanel2.Controls.Add(this.btnAgregar, 7, 0);
             this.tableLayoutPanel2.Controls.Add(this.label10, 5, 0);
-            this.tableLayoutPanel2.Controls.Add(this.label11, 3, 0);
+            this.tableLayoutPanel2.Controls.Add(this.Telefono, 3, 0);
             this.tableLayoutPanel2.Controls.Add(this.label12, 4, 0);
             this.tableLayoutPanel2.Controls.Add(this.label13, 1, 0);
             this.tableLayoutPanel2.Controls.Add(this.label14, 2, 0);
@@ -133,24 +133,24 @@
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(207, 43);
             this.label10.TabIndex = 21;
-            this.label10.Text = "Pedido";
+            this.label10.Text = "Dui";
             this.label10.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // label11
+            // Telefono
             // 
-            this.label11.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.Telefono.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.label11.AutoSize = true;
-            this.label11.BackColor = System.Drawing.Color.White;
-            this.label11.Font = new System.Drawing.Font("Palatino Linotype", 13.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label11.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(64)))));
-            this.label11.Location = new System.Drawing.Point(385, 0);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(236, 43);
-            this.label11.TabIndex = 21;
-            this.label11.Text = "Contacto";
-            this.label11.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.Telefono.AutoSize = true;
+            this.Telefono.BackColor = System.Drawing.Color.White;
+            this.Telefono.Font = new System.Drawing.Font("Palatino Linotype", 13.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.Telefono.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(64)))));
+            this.Telefono.Location = new System.Drawing.Point(385, 0);
+            this.Telefono.Name = "Telefono";
+            this.Telefono.Size = new System.Drawing.Size(236, 43);
+            this.Telefono.TabIndex = 21;
+            this.Telefono.Text = "Telefono";
+            this.Telefono.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // label12
             // 
@@ -165,7 +165,7 @@
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(208, 43);
             this.label12.TabIndex = 19;
-            this.label12.Text = "DUI";
+            this.label12.Text = "Correo";
             this.label12.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // label13
@@ -234,7 +234,7 @@
             this.pnlContenedor.BackColor = System.Drawing.Color.White;
             this.pnlContenedor.Location = new System.Drawing.Point(3, 3);
             this.pnlContenedor.Name = "pnlContenedor";
-            this.pnlContenedor.Size = new System.Drawing.Size(1455, 154);
+            this.pnlContenedor.Size = new System.Drawing.Size(1455, 171);
             this.pnlContenedor.TabIndex = 1;
             // 
             // panel5
@@ -369,7 +369,7 @@
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.Label label10;
-        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.Label Telefono;
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.Label label14;

@@ -39,16 +39,16 @@
             this.pnlVistaPedidos = new System.Windows.Forms.Panel();
             this.btnAgregar = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
-            this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
-            this.panel1 = new System.Windows.Forms.Panel();
+            this.flpPedidos = new System.Windows.Forms.FlowLayoutPanel();
             this.pnlFondo = new System.Windows.Forms.Panel();
+            this.panel1 = new System.Windows.Forms.Panel();
             this.panel4 = new System.Windows.Forms.Panel();
             this.panel6 = new System.Windows.Forms.Panel();
             this.panel7 = new System.Windows.Forms.Panel();
             this.panel8 = new System.Windows.Forms.Panel();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             this.pnlVistaPedidos.SuspendLayout();
-            this.flowLayoutPanel1.SuspendLayout();
+            this.flpPedidos.SuspendLayout();
             this.pnlFondo.SuspendLayout();
             this.panel4.SuspendLayout();
             this.panel7.SuspendLayout();
@@ -141,13 +141,12 @@
             this.panel5.Name = "panel5";
             this.panel5.Size = new System.Drawing.Size(1503, 121);
             this.panel5.TabIndex = 1;
-            this.panel5.Paint += new System.Windows.Forms.PaintEventHandler(this.panel5_Paint);
             // 
             // pnlVistaPedidos
             // 
             this.pnlVistaPedidos.Controls.Add(this.btnAgregar);
             this.pnlVistaPedidos.Controls.Add(this.button1);
-            this.pnlVistaPedidos.Controls.Add(this.flowLayoutPanel1);
+            this.pnlVistaPedidos.Controls.Add(this.flpPedidos);
             this.pnlVistaPedidos.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlVistaPedidos.Location = new System.Drawing.Point(0, 0);
             this.pnlVistaPedidos.Name = "pnlVistaPedidos";
@@ -183,27 +182,19 @@
             this.button1.UseVisualStyleBackColor = false;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
-            // flowLayoutPanel1
+            // flpPedidos
             // 
-            this.flowLayoutPanel1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.flpPedidos.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.flowLayoutPanel1.AutoScroll = true;
-            this.flowLayoutPanel1.Controls.Add(this.pnlFondo);
-            this.flowLayoutPanel1.Controls.Add(this.panel4);
-            this.flowLayoutPanel1.Controls.Add(this.panel7);
-            this.flowLayoutPanel1.Location = new System.Drawing.Point(48, 186);
-            this.flowLayoutPanel1.Name = "flowLayoutPanel1";
-            this.flowLayoutPanel1.Size = new System.Drawing.Size(1831, 755);
-            this.flowLayoutPanel1.TabIndex = 4;
-            // 
-            // panel1
-            // 
-            this.panel1.BackColor = System.Drawing.Color.White;
-            this.panel1.Location = new System.Drawing.Point(17, 13);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(423, 343);
-            this.panel1.TabIndex = 0;
+            this.flpPedidos.AutoScroll = true;
+            this.flpPedidos.Controls.Add(this.pnlFondo);
+            this.flpPedidos.Controls.Add(this.panel4);
+            this.flpPedidos.Controls.Add(this.panel7);
+            this.flpPedidos.Location = new System.Drawing.Point(48, 186);
+            this.flpPedidos.Name = "flpPedidos";
+            this.flpPedidos.Size = new System.Drawing.Size(1831, 755);
+            this.flpPedidos.TabIndex = 4;
             // 
             // pnlFondo
             // 
@@ -212,6 +203,14 @@
             this.pnlFondo.Name = "pnlFondo";
             this.pnlFondo.Size = new System.Drawing.Size(457, 375);
             this.pnlFondo.TabIndex = 0;
+            // 
+            // panel1
+            // 
+            this.panel1.BackColor = System.Drawing.Color.White;
+            this.panel1.Location = new System.Drawing.Point(17, 13);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(423, 343);
+            this.panel1.TabIndex = 0;
             // 
             // panel4
             // 
@@ -265,7 +264,7 @@
             this.Text = "frmPedidos";
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
             this.pnlVistaPedidos.ResumeLayout(false);
-            this.flowLayoutPanel1.ResumeLayout(false);
+            this.flpPedidos.ResumeLayout(false);
             this.pnlFondo.ResumeLayout(false);
             this.panel4.ResumeLayout(false);
             this.panel7.ResumeLayout(false);
@@ -284,7 +283,7 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Panel panel5;
         private System.Windows.Forms.Panel pnlVistaPedidos;
-        private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
+        private System.Windows.Forms.FlowLayoutPanel flpPedidos;
         private System.Windows.Forms.Button btnAgregar;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Panel pnlFondo;

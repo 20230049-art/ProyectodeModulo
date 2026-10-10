@@ -284,5 +284,30 @@ namespace Modelos.Entidades
             }
         }
 
+        public static DataTable ObtenerInsumosParaCombo()
+        {
+            DataTable dt = new DataTable();
+            try
+            {
+                using (SqlConnection connection = Conexion.Conectar())
+                {
+                    if (connection == null) return dt;
+
+                    string comando = "SELECT IdInsumos, NombreInsumo, PrecioInsumo, CantidadInsumo " +
+                                     "FROM Insumos WHERE EliminadoInsumos = 0 ORDER BY NombreInsumo;";
+
+                    using (SqlDataAdapter ad = new SqlDataAdapter(comando, connection))
+                    {
+                        ad.Fill(dt);
+                    }
+                }
+            }
+            catch (SqlException ex)
+            {
+                MessageBox.Show("Error al obtener insumos: " + ex.Message,
+                        "ERROR-SQL-100", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            return dt;
+        }
     }
 }

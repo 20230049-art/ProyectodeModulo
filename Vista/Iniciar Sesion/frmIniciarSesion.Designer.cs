@@ -29,54 +29,49 @@
         private void InitializeComponent()
         {
             this.pnlVistaIniciarSesion = new System.Windows.Forms.Panel();
-            this.button1 = new System.Windows.Forms.Button();
+            this.lnkOlvidaste = new System.Windows.Forms.Button();
             this.btnIniciarSesion = new System.Windows.Forms.Button();
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
-            this.textBox2 = new System.Windows.Forms.TextBox();
-            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.chkRecordarme = new System.Windows.Forms.CheckBox();
+            this.txtContrasena = new System.Windows.Forms.TextBox();
+            this.txtCorreo = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
-            this.panel4 = new System.Windows.Forms.Panel();
-            this.panel3 = new System.Windows.Forms.Panel();
-            this.panel1 = new System.Windows.Forms.Panel();
-            this.panel2 = new System.Windows.Forms.Panel();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.pnlVistaIniciarSesion.SuspendLayout();
-            this.panel1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
             // pnlVistaIniciarSesion
             // 
             this.pnlVistaIniciarSesion.BackColor = System.Drawing.Color.White;
-            this.pnlVistaIniciarSesion.Controls.Add(this.button1);
+            this.pnlVistaIniciarSesion.Controls.Add(this.pictureBox1);
+            this.pnlVistaIniciarSesion.Controls.Add(this.lnkOlvidaste);
             this.pnlVistaIniciarSesion.Controls.Add(this.btnIniciarSesion);
-            this.pnlVistaIniciarSesion.Controls.Add(this.checkBox1);
-            this.pnlVistaIniciarSesion.Controls.Add(this.textBox2);
-            this.pnlVistaIniciarSesion.Controls.Add(this.textBox1);
+            this.pnlVistaIniciarSesion.Controls.Add(this.chkRecordarme);
+            this.pnlVistaIniciarSesion.Controls.Add(this.txtContrasena);
+            this.pnlVistaIniciarSesion.Controls.Add(this.txtCorreo);
             this.pnlVistaIniciarSesion.Controls.Add(this.label4);
             this.pnlVistaIniciarSesion.Controls.Add(this.label3);
             this.pnlVistaIniciarSesion.Controls.Add(this.label2);
             this.pnlVistaIniciarSesion.Controls.Add(this.label1);
-            this.pnlVistaIniciarSesion.Controls.Add(this.panel4);
-            this.pnlVistaIniciarSesion.Controls.Add(this.panel3);
-            this.pnlVistaIniciarSesion.Controls.Add(this.panel1);
             this.pnlVistaIniciarSesion.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlVistaIniciarSesion.Location = new System.Drawing.Point(0, 0);
             this.pnlVistaIniciarSesion.Name = "pnlVistaIniciarSesion";
             this.pnlVistaIniciarSesion.Size = new System.Drawing.Size(1924, 1033);
             this.pnlVistaIniciarSesion.TabIndex = 0;
             // 
-            // button1
+            // lnkOlvidaste
             // 
-            this.button1.Font = new System.Drawing.Font("High Tower Text", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button1.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(166)))), ((int)(((byte)(207)))));
-            this.button1.Location = new System.Drawing.Point(1196, 782);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(457, 56);
-            this.button1.TabIndex = 12;
-            this.button1.Text = "¿Olvidaste la contraseña?";
-            this.button1.UseVisualStyleBackColor = true;
+            this.lnkOlvidaste.Font = new System.Drawing.Font("High Tower Text", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lnkOlvidaste.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(166)))), ((int)(((byte)(207)))));
+            this.lnkOlvidaste.Location = new System.Drawing.Point(1203, 805);
+            this.lnkOlvidaste.Name = "lnkOlvidaste";
+            this.lnkOlvidaste.Size = new System.Drawing.Size(457, 56);
+            this.lnkOlvidaste.TabIndex = 12;
+            this.lnkOlvidaste.Text = "¿Olvidaste la contraseña?";
+            this.lnkOlvidaste.UseVisualStyleBackColor = true;
             // 
             // btnIniciarSesion
             // 
@@ -85,7 +80,7 @@
             this.btnIniciarSesion.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnIniciarSesion.Font = new System.Drawing.Font("High Tower Text", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnIniciarSesion.ForeColor = System.Drawing.Color.White;
-            this.btnIniciarSesion.Location = new System.Drawing.Point(1196, 720);
+            this.btnIniciarSesion.Location = new System.Drawing.Point(1203, 743);
             this.btnIniciarSesion.Name = "btnIniciarSesion";
             this.btnIniciarSesion.Size = new System.Drawing.Size(457, 56);
             this.btnIniciarSesion.TabIndex = 11;
@@ -93,33 +88,36 @@
             this.btnIniciarSesion.UseVisualStyleBackColor = false;
             this.btnIniciarSesion.Click += new System.EventHandler(this.btnIniciarSesion_Click);
             // 
-            // checkBox1
+            // chkRecordarme
             // 
-            this.checkBox1.AutoSize = true;
-            this.checkBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.checkBox1.ForeColor = System.Drawing.Color.Gray;
-            this.checkBox1.Location = new System.Drawing.Point(1129, 607);
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(123, 24);
-            this.checkBox1.TabIndex = 9;
-            this.checkBox1.Text = "Recordarme";
-            this.checkBox1.UseVisualStyleBackColor = true;
+            this.chkRecordarme.AutoSize = true;
+            this.chkRecordarme.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.chkRecordarme.ForeColor = System.Drawing.Color.Gray;
+            this.chkRecordarme.Location = new System.Drawing.Point(1129, 607);
+            this.chkRecordarme.Name = "chkRecordarme";
+            this.chkRecordarme.Size = new System.Drawing.Size(123, 24);
+            this.chkRecordarme.TabIndex = 9;
+            this.chkRecordarme.Text = "Recordarme";
+            this.chkRecordarme.UseVisualStyleBackColor = true;
             // 
-            // textBox2
+            // txtContrasena
             // 
-            this.textBox2.Font = new System.Drawing.Font("Leelawadee UI", 16.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBox2.Location = new System.Drawing.Point(1129, 553);
-            this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(584, 45);
-            this.textBox2.TabIndex = 8;
+            this.txtContrasena.Font = new System.Drawing.Font("Leelawadee UI", 16.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtContrasena.Location = new System.Drawing.Point(1129, 553);
+            this.txtContrasena.Name = "txtContrasena";
+            this.txtContrasena.PasswordChar = '●';
+            this.txtContrasena.Size = new System.Drawing.Size(584, 45);
+            this.txtContrasena.TabIndex = 8;
+            this.txtContrasena.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtContrasena_KeyDown);
             // 
-            // textBox1
+            // txtCorreo
             // 
-            this.textBox1.Font = new System.Drawing.Font("Leelawadee UI", 16.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBox1.Location = new System.Drawing.Point(1129, 410);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(584, 45);
-            this.textBox1.TabIndex = 7;
+            this.txtCorreo.Font = new System.Drawing.Font("Leelawadee UI", 16.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtCorreo.Location = new System.Drawing.Point(1129, 410);
+            this.txtCorreo.Name = "txtCorreo";
+            this.txtCorreo.Size = new System.Drawing.Size(584, 45);
+            this.txtCorreo.TabIndex = 7;
+            this.txtCorreo.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtCorreo_KeyDown);
             // 
             // label4
             // 
@@ -148,7 +146,7 @@
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label2.ForeColor = System.Drawing.Color.DarkGray;
-            this.label2.Location = new System.Drawing.Point(1125, 299);
+            this.label2.Location = new System.Drawing.Point(1125, 215);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(377, 20);
             this.label2.TabIndex = 4;
@@ -159,44 +157,21 @@
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Javanese Text", 40.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label1.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(7)))), ((int)(((byte)(11)))), ((int)(((byte)(67)))));
-            this.label1.Location = new System.Drawing.Point(1103, 207);
+            this.label1.Location = new System.Drawing.Point(1103, 123);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(465, 152);
             this.label1.TabIndex = 3;
             this.label1.Text = "Iniciar Sesión";
             // 
-            // panel4
+            // pictureBox1
             // 
-            this.panel4.BackColor = System.Drawing.Color.Olive;
-            this.panel4.Location = new System.Drawing.Point(828, 174);
-            this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(200, 775);
-            this.panel4.TabIndex = 2;
-            // 
-            // panel3
-            // 
-            this.panel3.BackColor = System.Drawing.Color.Olive;
-            this.panel3.Location = new System.Drawing.Point(12, 177);
-            this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(200, 775);
-            this.panel3.TabIndex = 1;
-            // 
-            // panel1
-            // 
-            this.panel1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
-            this.panel1.Controls.Add(this.panel2);
-            this.panel1.Location = new System.Drawing.Point(13, 13);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(1899, 155);
-            this.panel1.TabIndex = 0;
-            // 
-            // panel2
-            // 
-            this.panel2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
-            this.panel2.Location = new System.Drawing.Point(8, 161);
-            this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(1920, 467);
-            this.panel2.TabIndex = 1;
+            this.pictureBox1.Image = global::Vista.Properties.Resources.Captura_de_pantalla_2026_10_10_113754;
+            this.pictureBox1.Location = new System.Drawing.Point(0, 0);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(896, 1033);
+            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pictureBox1.TabIndex = 13;
+            this.pictureBox1.TabStop = false;
             // 
             // frmIniciarSesion
             // 
@@ -210,9 +185,10 @@
             this.Name = "frmIniciarSesion";
             this.Text = "frmIniciarSesion";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
+            this.Load += new System.EventHandler(this.frmIniciarSesion_Load);
             this.pnlVistaIniciarSesion.ResumeLayout(false);
             this.pnlVistaIniciarSesion.PerformLayout();
-            this.panel1.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -220,18 +196,15 @@
         #endregion
 
         private System.Windows.Forms.Panel pnlVistaIniciarSesion;
-        private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.Panel panel3;
-        private System.Windows.Forms.Panel panel2;
-        private System.Windows.Forms.Panel panel4;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.TextBox txtCorreo;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Button btnIniciarSesion;
-        private System.Windows.Forms.CheckBox checkBox1;
-        private System.Windows.Forms.TextBox textBox2;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.CheckBox chkRecordarme;
+        private System.Windows.Forms.TextBox txtContrasena;
+        private System.Windows.Forms.Button lnkOlvidaste;
+        private System.Windows.Forms.PictureBox pictureBox1;
     }
 }

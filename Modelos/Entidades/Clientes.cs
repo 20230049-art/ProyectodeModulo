@@ -41,13 +41,13 @@ namespace Modelos.Entidades
             }
         }
 
-        public static string AgregarCliente(Clientes nuevoCliente)
+        public static (string Resultado, int IdCliente) AgregarCliente(Clientes nuevoCliente)
         {
             try
             {
                 using (SqlConnection connection = Conexion.Conectar())
                 {
-                    if (connection == null) return "ERROR";
+                    if (connection == null) return ("ERROR", 0);
 
                     using (SqlCommand cmd = new SqlCommand("AgregarCliente", connection))
                     {
@@ -59,26 +59,35 @@ namespace Modelos.Entidades
                         cmd.Parameters.Add("@TelefonoCliente", SqlDbType.VarChar).Value = nuevoCliente.TelefonoCliente;
                         cmd.Parameters.Add("@CorreoCliente", SqlDbType.VarChar).Value = nuevoCliente.CorreoCliente;
 
-                        object resultado = cmd.ExecuteScalar();
+                        using (SqlDataReader dr = cmd.ExecuteReader())
+                        {
+                            if (dr.Read())
+                            {
+                                string resultado = dr["Resultado"]?.ToString() ?? "ERROR";
+                                int idCliente = dr["IdCliente"] != DBNull.Value ? Convert.ToInt32(dr["IdCliente"]) : 0;
 
-                        return resultado == null || resultado == DBNull.Value ? "ERROR" : resultado.ToString();
+                                return (resultado, idCliente);
+                            }
+                        }
+
+                        return ("ERROR", 0);
                     }
                 }
             }
             catch (SqlException ex)
             {
-                MessageBox.Show("Error SQL al agregar el cliente:\n" + ex.Message, "ERROR-SQL-100",
-                                MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return "ERROR";
+                MessageBox.Show("Error SQL al agregar el cliente:\n" + ex.Message,
+                                "ERROR-SQL-100", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return ("ERROR", 0);
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error al agregar el cliente:\n" + ex.Message, "ERROR-EXCEPCION-102",
-                                MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return "ERROR";
+                MessageBox.Show("Error al agregar el cliente:\n" + ex.Message,
+                                "ERROR-EXCEPCION-102", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return ("ERROR", 0);
             }
         }
-            public static DataTable ObtenerClienteId(int idCliente)
+        public static DataTable ObtenerClienteId(int idCliente)
             {
             DataTable dt = new DataTable();
             try
@@ -124,8 +133,9 @@ namespace Modelos.Entidades
                         cmd.Parameters.Add("@TelefonoCliente", SqlDbType.VarChar).Value = clienteActualizar.TelefonoCliente;
                         cmd.Parameters.Add("@CorreoCliente", SqlDbType.VarChar).Value = clienteActualizar.CorreoCliente;
 
-                        int filas = cmd.ExecuteNonQuery();
-                        return filas > 0;
+                        object resultado = cmd.ExecuteScalar();
+
+                        return resultado != null && resultado != DBNull.Value && Convert.ToInt32(resultado) > 0;
                     }
                 }
             }
@@ -232,6 +242,32 @@ namespace Modelos.Entidades
                                 "ERROR-EXCEPCION-102", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;
             }
+        }
+
+        public static DataTable ObtenerClientesParaCombo()
+        {
+            DataTable dt = new DataTable();
+            try
+            {
+                using (SqlConnection connection = Conexion.Conectar())
+                {
+                    if (connection == null) return dt;
+
+                    string comando = "SELECT IdCliente, NombreCliente + ' ' + ApellidoCliente AS NombreCompleto " +
+                                     "FROM Cliente WHERE EliminadoCliente = 0 ORDER BY NombreCliente;";
+
+                    using (SqlDataAdapter ad = new SqlDataAdapter(comando, connection))
+                    {
+                        ad.Fill(dt);
+                    }
+                }
+            }
+            catch (SqlException ex)
+            {
+                MessageBox.Show("Error al obtener clientes: " + ex.Message,
+                        "ERROR-SQL-100", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            return dt;
         }
     }
 }
