@@ -214,8 +214,8 @@ namespace Modelos.Entidades
                         cmd.CommandType = CommandType.StoredProcedure;
                         cmd.Parameters.Add("@IdMaquinaria", SqlDbType.Int).Value = idMaquinaria;
 
-                        int filas = cmd.ExecuteNonQuery();
-                        return filas > 0;
+                        cmd.ExecuteNonQuery();
+                        return EstaEliminada(idMaquinaria);
                     }
                 }
             }
@@ -224,19 +224,49 @@ namespace Modelos.Entidades
                 throw new Exception("Error al eliminar la maquinaria: " + ex.Message, ex);
             }
         }
+
+        private static bool EstaEliminada(int idMaquinaria)
+        {
+            try
+            {
+                using (SqlConnection connection = Conexion.Conectar())
+                {
+                    if (connection == null) return false;
+
+                    string query = "SELECT EliminadoMaquinaria FROM Maquinaria WHERE IdMaquinaria = @Id";
+                    using (SqlCommand cmd = new SqlCommand(query, connection))
+                    {
+                        cmd.Parameters.Add("@Id", SqlDbType.Int).Value = idMaquinaria;
+
+                        object resultado = cmd.ExecuteScalar();
+                        if (resultado == null || resultado == DBNull.Value) return false;
+
+                        return Convert.ToBoolean(resultado);
+                    }
+                }
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
         public static bool RestaurarMaquinaria(int idMaquinaria)
         {
             try
             {
                 using (SqlConnection connection = Conexion.Conectar())
                 {
+                    if (connection == null) return false;
+
                     using (SqlCommand cmd = new SqlCommand("RestaurarMaquinaria", connection))
                     {
                         cmd.CommandType = CommandType.StoredProcedure;
                         cmd.Parameters.Add("@IdMaquinaria", SqlDbType.Int).Value = idMaquinaria;
 
-                        int filas = cmd.ExecuteNonQuery();
-                        return filas > 0;
+                        cmd.ExecuteNonQuery();
+
+                        return !EstaEliminada(idMaquinaria);
                     }
                 }
             }

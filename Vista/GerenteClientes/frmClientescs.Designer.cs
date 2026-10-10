@@ -118,6 +118,7 @@
             this.btnAgregar.TabIndex = 22;
             this.btnAgregar.Text = "Eliminar";
             this.btnAgregar.UseVisualStyleBackColor = false;
+            this.btnAgregar.Click += new System.EventHandler(this.btnAgregar_Click);
             // 
             // label10
             // 
@@ -233,7 +234,7 @@
             this.pnlContenedor.BackColor = System.Drawing.Color.White;
             this.pnlContenedor.Location = new System.Drawing.Point(3, 3);
             this.pnlContenedor.Name = "pnlContenedor";
-            this.pnlContenedor.Size = new System.Drawing.Size(1836, 127);
+            this.pnlContenedor.Size = new System.Drawing.Size(1455, 154);
             this.pnlContenedor.TabIndex = 1;
             // 
             // panel5

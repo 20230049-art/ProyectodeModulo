@@ -74,6 +74,42 @@ namespace Modelos.Entidades
             return dt;
         }
 
+        public static bool AgregarInsumo(Insumos nuevoInsumo)
+        {
+            try
+            {
+                using (SqlConnection connection = Conexion.Conectar())
+                {
+                    if (connection == null) return false;
+
+                    using (SqlCommand cmd = new SqlCommand("AgregarInsumos", connection))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+                        cmd.Parameters.Add("@NombreInsumo", SqlDbType.VarChar).Value = nuevoInsumo.NombreInsumo;
+                        cmd.Parameters.Add("@PrecioInsumo", SqlDbType.Money).Value = nuevoInsumo.PrecioInsumo;
+                        cmd.Parameters.Add("@CantidadInsumo", SqlDbType.Int).Value = nuevoInsumo.CantidadInsumo;
+                        cmd.Parameters.Add("@IdEstadoInsumos", SqlDbType.Int).Value = nuevoInsumo.IdEstadoInsumo;
+
+                        cmd.ExecuteNonQuery();
+                        return true;
+                    }
+                }
+            }
+            catch (SqlException ex)
+            {
+                MessageBox.Show("Error SQL al agregar el insumo:\n" + ex.Message,  "ERROR-SQL-100",
+                                MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al agregar el insumo:\n" + ex.Message,  "ERROR-EXCEPCION-102",
+                                MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
+            }
+        }
+
         public static DataTable MostrarInsumosAgotados()
         {
             DataTable dt = new DataTable();
@@ -189,14 +225,40 @@ namespace Modelos.Entidades
                         cmd.CommandType = CommandType.StoredProcedure;
                         cmd.Parameters.Add("@IdInsumos", SqlDbType.Int).Value = idInsumo;
 
-                        int filas = cmd.ExecuteNonQuery();
-                        return filas > 0;
+                        cmd.ExecuteNonQuery();
+                        return EstaEliminado(idInsumo);
                     }
                 }
             }
             catch (SqlException ex)
             {
                 throw new Exception("Error al eliminar el insumo: " + ex.Message, ex);
+            }
+        }
+
+        private static bool EstaEliminado(int idInsumo)
+        {
+            try
+            {
+                using (SqlConnection connection = Conexion.Conectar())
+                {
+                    if (connection == null) return false;
+
+                    string query = "SELECT EliminadoInsumos FROM Insumos WHERE IdInsumos = @Id";
+                    using (SqlCommand cmd = new SqlCommand(query, connection))
+                    {
+                        cmd.Parameters.Add("@Id", SqlDbType.Int).Value = idInsumo;
+
+                        object resultado = cmd.ExecuteScalar();
+                        if (resultado == null || resultado == DBNull.Value) return false;
+
+                        return Convert.ToBoolean(resultado);
+                    }
+                }
+            }
+            catch
+            {
+                return false;
             }
         }
 
@@ -211,8 +273,8 @@ namespace Modelos.Entidades
                         cmd.CommandType = CommandType.StoredProcedure;
                         cmd.Parameters.Add("@IdInsumos", SqlDbType.Int).Value = idInsumo;
 
-                        int filas = cmd.ExecuteNonQuery();
-                        return filas > 0;
+                        cmd.ExecuteNonQuery();
+                        return !EstaEliminado(idInsumo);
                     }
                 }
             }

@@ -192,13 +192,9 @@ namespace Vista.GerenteInventario
                 string nombre = dataGridView1.CurrentRow.Cells["NombreInsumo"].Value?.ToString() ?? "";
 
                 DialogResult confirmacion = MessageBox.Show(
-                    $"¿Está seguro que desea eliminar el siguiente insumo?\n\n" +
-                    $"Insumo: \"{nombre}\"\n\n" +
-                    "El insumo no se borrará permanentemente, solo se marcará como eliminado.",
-                    "Confirmar eliminación",
-                    MessageBoxButtons.YesNo,
-                    MessageBoxIcon.Warning,
-                    MessageBoxDefaultButton.Button2);
+                    $"¿Está seguro que desea eliminar el siguiente insumo?\n\n" + $"Insumo: \"{nombre}\"\n\n" +
+                    "El insumo no se borrará permanentemente, solo se marcará como eliminado.",  "Confirmar eliminación",
+                    MessageBoxButtons.YesNo,  MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2);
 
                 if (confirmacion != DialogResult.Yes) return;
 
@@ -258,8 +254,8 @@ namespace Vista.GerenteInventario
                 dataGridView1.EnableHeadersVisualStyles = false;
                 dataGridView1.BorderStyle = BorderStyle.FixedSingle;
                 dataGridView1.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
-                dataGridView1.GridColor = Color.FromArgb(200, 180, 160);
-                dataGridView1.BackgroundColor = Color.FromArgb(253, 241, 217);
+                dataGridView1.GridColor = Color.FromArgb(180, 210, 235);   
+                dataGridView1.BackgroundColor = Color.FromArgb(235, 245, 255); 
                 dataGridView1.RowHeadersVisible = false;
                 dataGridView1.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
                 dataGridView1.MultiSelect = false;
@@ -269,25 +265,25 @@ namespace Vista.GerenteInventario
                 dataGridView1.AllowUserToResizeRows = false;
                 dataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
 
-                dataGridView1.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(208, 112, 3);
+                dataGridView1.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(50, 130, 190);  
                 dataGridView1.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
-                dataGridView1.ColumnHeadersDefaultCellStyle.Font = new Font("Book Antiqua", 12, FontStyle.Bold);
+                dataGridView1.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 11, FontStyle.Bold);
                 dataGridView1.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
                 dataGridView1.ColumnHeadersDefaultCellStyle.Padding = new Padding(6, 0, 0, 0);
                 dataGridView1.ColumnHeadersHeight = 38;
                 dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
 
-                dataGridView1.DefaultCellStyle.Font = new Font("Bookman Old Style", 11, FontStyle.Regular);
-                dataGridView1.DefaultCellStyle.ForeColor = Color.FromArgb(64, 6, 6);
-                dataGridView1.DefaultCellStyle.BackColor = Color.FromArgb(253, 241, 217);
-                dataGridView1.DefaultCellStyle.SelectionBackColor = Color.FromArgb(249, 190, 121);
-                dataGridView1.DefaultCellStyle.SelectionForeColor = Color.FromArgb(64, 6, 6);
+                dataGridView1.DefaultCellStyle.Font = new Font("Segoe UI", 10, FontStyle.Regular);
+                dataGridView1.DefaultCellStyle.ForeColor = Color.FromArgb(30, 60, 100);         
+                dataGridView1.DefaultCellStyle.BackColor = Color.FromArgb(235, 245, 255);      
+                dataGridView1.DefaultCellStyle.SelectionBackColor = Color.FromArgb(150, 200, 240); 
+                dataGridView1.DefaultCellStyle.SelectionForeColor = Color.FromArgb(20, 50, 90);
                 dataGridView1.DefaultCellStyle.Padding = new Padding(6, 0, 0, 0);
                 dataGridView1.RowTemplate.Height = 34;
 
-                dataGridView1.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(245, 228, 200);
-                dataGridView1.AlternatingRowsDefaultCellStyle.SelectionBackColor = Color.FromArgb(249, 190, 121);
-                dataGridView1.AlternatingRowsDefaultCellStyle.ForeColor = Color.FromArgb(64, 6, 6);
+                dataGridView1.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(220, 235, 250);      
+                dataGridView1.AlternatingRowsDefaultCellStyle.SelectionBackColor = Color.FromArgb(150, 200, 240);
+                dataGridView1.AlternatingRowsDefaultCellStyle.ForeColor = Color.FromArgb(30, 60, 100);
             }
             catch (Exception ex)
             {
@@ -309,6 +305,44 @@ namespace Vista.GerenteInventario
         private void button2_Click(object sender, EventArgs e)
         {
             CargarInsumosPorFiltro(3);
+        }
+
+        private void dataGridView1_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            try
+            {
+                if (e.RowIndex < 0) return;
+
+                DataGridViewRow fila = dataGridView1.Rows[e.RowIndex];
+
+                if (fila.Cells["IdInsumos"].Value == null)
+                {
+                    MessageBox.Show("No se pudo obtener el ID del insumo seleccionado.", "ERROR-CARGADATOS-008",
+                                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                int idInsumo = Convert.ToInt32(fila.Cells["IdInsumos"].Value);
+                string nombre = fila.Cells["NombreInsumo"].Value?.ToString() ?? "";
+
+                frmPatallaNegra fondo = new frmPatallaNegra();
+                fondo.StartPosition = FormStartPosition.CenterParent;
+                fondo.WindowState = FormWindowState.Maximized;
+                fondo.Show();
+
+                frmActualizarInsumo frmActualizar = new frmActualizarInsumo(idInsumo);
+                frmActualizar.ShowDialog();
+
+                fondo.Close();
+
+                AplicarFiltro(filtroActual);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al abrir el formulario de actualización:\n" + ex.Message,
+                                "ERROR-CAMBIO-103",
+                                MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
     }
 }

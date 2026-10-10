@@ -65,6 +65,9 @@
     <Compile Include="frmInicio.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="frmOperador.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="frmPatallaNegra.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -175,6 +178,7 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utilidad\Redondeo.cs" />
     <EmbeddedResource Include="frmPatallaNegra.resx">
       <DependentUpon>frmPatallaNegra.cs</DependentUpon>
     </EmbeddedResource>

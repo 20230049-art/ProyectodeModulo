@@ -31,16 +31,16 @@
             this.panel1 = new System.Windows.Forms.Panel();
             this.label1 = new System.Windows.Forms.Label();
             this.panel2 = new System.Windows.Forms.Panel();
-            this.maskedTextBox2 = new System.Windows.Forms.MaskedTextBox();
-            this.maskedTextBox1 = new System.Windows.Forms.MaskedTextBox();
+            this.mtxtDUI = new System.Windows.Forms.MaskedTextBox();
+            this.mtxtTelefono = new System.Windows.Forms.MaskedTextBox();
             this.label5 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
-            this.textBox5 = new System.Windows.Forms.TextBox();
+            this.txtCorreo = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
-            this.textBox3 = new System.Windows.Forms.TextBox();
+            this.txtApellido = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
-            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.txtNombre = new System.Windows.Forms.TextBox();
             this.btnAgregar = new System.Windows.Forms.Button();
             this.btnCerrar = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
@@ -71,38 +71,38 @@
             // panel2
             // 
             this.panel2.BackColor = System.Drawing.Color.White;
-            this.panel2.Controls.Add(this.maskedTextBox2);
-            this.panel2.Controls.Add(this.maskedTextBox1);
+            this.panel2.Controls.Add(this.mtxtDUI);
+            this.panel2.Controls.Add(this.mtxtTelefono);
             this.panel2.Controls.Add(this.label5);
             this.panel2.Controls.Add(this.label6);
-            this.panel2.Controls.Add(this.textBox5);
+            this.panel2.Controls.Add(this.txtCorreo);
             this.panel2.Controls.Add(this.label4);
-            this.panel2.Controls.Add(this.textBox3);
+            this.panel2.Controls.Add(this.txtApellido);
             this.panel2.Controls.Add(this.label3);
             this.panel2.Controls.Add(this.label2);
-            this.panel2.Controls.Add(this.textBox1);
+            this.panel2.Controls.Add(this.txtNombre);
             this.panel2.Location = new System.Drawing.Point(72, 152);
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(653, 409);
             this.panel2.TabIndex = 14;
             // 
-            // maskedTextBox2
+            // mtxtDUI
             // 
-            this.maskedTextBox2.Font = new System.Drawing.Font("Microsoft Tai Le", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.maskedTextBox2.Location = new System.Drawing.Point(44, 237);
-            this.maskedTextBox2.Mask = "00000000-0";
-            this.maskedTextBox2.Name = "maskedTextBox2";
-            this.maskedTextBox2.Size = new System.Drawing.Size(263, 33);
-            this.maskedTextBox2.TabIndex = 17;
+            this.mtxtDUI.Font = new System.Drawing.Font("Microsoft Tai Le", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.mtxtDUI.Location = new System.Drawing.Point(44, 237);
+            this.mtxtDUI.Mask = "00000000-0";
+            this.mtxtDUI.Name = "mtxtDUI";
+            this.mtxtDUI.Size = new System.Drawing.Size(263, 33);
+            this.mtxtDUI.TabIndex = 17;
             // 
-            // maskedTextBox1
+            // mtxtTelefono
             // 
-            this.maskedTextBox1.Font = new System.Drawing.Font("Microsoft Tai Le", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.maskedTextBox1.Location = new System.Drawing.Point(322, 237);
-            this.maskedTextBox1.Mask = "0000-0000";
-            this.maskedTextBox1.Name = "maskedTextBox1";
-            this.maskedTextBox1.Size = new System.Drawing.Size(269, 33);
-            this.maskedTextBox1.TabIndex = 16;
+            this.mtxtTelefono.Font = new System.Drawing.Font("Microsoft Tai Le", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.mtxtTelefono.Location = new System.Drawing.Point(322, 237);
+            this.mtxtTelefono.Mask = "0000-0000";
+            this.mtxtTelefono.Name = "mtxtTelefono";
+            this.mtxtTelefono.Size = new System.Drawing.Size(269, 33);
+            this.mtxtTelefono.TabIndex = 16;
             // 
             // label5
             // 
@@ -124,13 +124,13 @@
             this.label6.TabIndex = 13;
             this.label6.Text = "Correo";
             // 
-            // textBox5
+            // txtCorreo
             // 
-            this.textBox5.Font = new System.Drawing.Font("Microsoft Tai Le", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBox5.Location = new System.Drawing.Point(44, 318);
-            this.textBox5.Name = "textBox5";
-            this.textBox5.Size = new System.Drawing.Size(538, 33);
-            this.textBox5.TabIndex = 12;
+            this.txtCorreo.Font = new System.Drawing.Font("Microsoft Tai Le", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtCorreo.Location = new System.Drawing.Point(44, 318);
+            this.txtCorreo.Name = "txtCorreo";
+            this.txtCorreo.Size = new System.Drawing.Size(538, 33);
+            this.txtCorreo.TabIndex = 12;
             // 
             // label4
             // 
@@ -142,13 +142,13 @@
             this.label4.TabIndex = 9;
             this.label4.Text = "Apellido";
             // 
-            // textBox3
+            // txtApellido
             // 
-            this.textBox3.Font = new System.Drawing.Font("Microsoft Tai Le", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBox3.Location = new System.Drawing.Point(44, 153);
-            this.textBox3.Name = "textBox3";
-            this.textBox3.Size = new System.Drawing.Size(538, 33);
-            this.textBox3.TabIndex = 8;
+            this.txtApellido.Font = new System.Drawing.Font("Microsoft Tai Le", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtApellido.Location = new System.Drawing.Point(44, 153);
+            this.txtApellido.Name = "txtApellido";
+            this.txtApellido.Size = new System.Drawing.Size(538, 33);
+            this.txtApellido.TabIndex = 8;
             // 
             // label3
             // 
@@ -170,13 +170,13 @@
             this.label2.TabIndex = 3;
             this.label2.Text = "Nombre";
             // 
-            // textBox1
+            // txtNombre
             // 
-            this.textBox1.Font = new System.Drawing.Font("Microsoft Tai Le", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBox1.Location = new System.Drawing.Point(44, 71);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(538, 33);
-            this.textBox1.TabIndex = 2;
+            this.txtNombre.Font = new System.Drawing.Font("Microsoft Tai Le", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtNombre.Location = new System.Drawing.Point(44, 71);
+            this.txtNombre.Name = "txtNombre";
+            this.txtNombre.Size = new System.Drawing.Size(538, 33);
+            this.txtNombre.TabIndex = 2;
             // 
             // btnAgregar
             // 
@@ -190,6 +190,7 @@
             this.btnAgregar.TabIndex = 16;
             this.btnAgregar.Text = "Actualizar";
             this.btnAgregar.UseVisualStyleBackColor = false;
+            this.btnAgregar.Click += new System.EventHandler(this.btnAgregar_Click);
             // 
             // btnCerrar
             // 
@@ -203,6 +204,7 @@
             this.btnCerrar.TabIndex = 17;
             this.btnCerrar.Text = "Cancelar";
             this.btnCerrar.UseVisualStyleBackColor = false;
+            this.btnCerrar.Click += new System.EventHandler(this.btnCerrar_Click);
             // 
             // frmActualizarCliente
             // 
@@ -231,16 +233,16 @@
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Panel panel2;
-        private System.Windows.Forms.MaskedTextBox maskedTextBox2;
-        private System.Windows.Forms.MaskedTextBox maskedTextBox1;
+        private System.Windows.Forms.MaskedTextBox mtxtDUI;
+        private System.Windows.Forms.MaskedTextBox mtxtTelefono;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.TextBox textBox5;
+        private System.Windows.Forms.TextBox txtCorreo;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.TextBox textBox3;
+        private System.Windows.Forms.TextBox txtApellido;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.TextBox txtNombre;
         private System.Windows.Forms.Button btnAgregar;
         private System.Windows.Forms.Button btnCerrar;
     }

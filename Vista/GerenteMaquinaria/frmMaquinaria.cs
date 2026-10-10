@@ -113,8 +113,8 @@ namespace Vista.GerenteMaquinaria
         {
             Panel tarjeta = new Panel
             {
-                Width = 210,
-                Height = 250,
+                Width = 200,
+                Height = 240,
                 BackColor = Color.White,
                 Margin = new Padding(8),
                 Cursor = Cursors.Hand,
@@ -130,7 +130,7 @@ namespace Vista.GerenteMaquinaria
 
             PictureBox pic = new PictureBox
             {
-                Width = 190,
+                Width = 175,
                 Height = 150,
                 Location = new Point(10, 10),
                 SizeMode = PictureBoxSizeMode.Zoom,
@@ -168,7 +168,7 @@ namespace Vista.GerenteMaquinaria
                 Font = new Font("Segoe UI", 12, FontStyle.Regular),   
                 ForeColor = Color.FromArgb(30, 60, 100),             
                 AutoSize = false,
-                Width = 190,
+                Width = 175,
                 Height = 30,
                 Location = new Point(10, 165),
                 TextAlign = ContentAlignment.MiddleCenter,
@@ -181,7 +181,7 @@ namespace Vista.GerenteMaquinaria
                 Font = new Font("Segoe UI", 11, FontStyle.Regular),    
                 ForeColor = ObtenerColorEstado(estado),
                 AutoSize = false,
-                Width = 190,
+                Width = 175,
                 Height = 25,
                 Location = new Point(10, 200),
                 TextAlign = ContentAlignment.MiddleCenter,
@@ -231,8 +231,15 @@ namespace Vista.GerenteMaquinaria
         {
             try
             {
+                frmPatallaNegra fondo = new frmPatallaNegra();
+                fondo.StartPosition = FormStartPosition.CenterParent;
+                fondo.WindowState = FormWindowState.Maximized;
+                fondo.Show();
+
                 frmActualizarMaquinaria frmActualizar = new frmActualizarMaquinaria(idMaquinaria);
                 frmActualizar.ShowDialog();
+
+                fondo.Close();
                 CargarMaquinariaPorFiltro(filtroActual);
             }
             catch (Exception ex)
@@ -288,7 +295,79 @@ namespace Vista.GerenteMaquinaria
 
         private void btnAgregar_Click(object sender, EventArgs e)
         {
+            try
+            {
+                if (idMaquinariaSeleccionada <= 0)
+                {
+                    MessageBox.Show("Debe seleccionar una maquinaria de la lista.",  "Sin selección",
+                                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
 
+                DialogResult r = MessageBox.Show(
+                    "¿Está seguro de eliminar la maquinaria seleccionada?\n\n" + "Podrá restaurarla después si lo necesita.",
+                    "Confirmar eliminación", MessageBoxButtons.YesNo,  MessageBoxIcon.Question);
+
+                if (r != DialogResult.Yes) return;
+
+                bool eliminado = Maquinaria.EliminarMaquinaria(idMaquinariaSeleccionada);
+
+                if (eliminado)
+                {
+                    MessageBox.Show("Maquinaria eliminada correctamente.",  "Operación exitosa",
+                                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                    idMaquinariaSeleccionada = -1;
+                    CargarMaquinariaPorFiltro(filtroActual);
+                }
+                else
+                {
+                    MessageBox.Show("No se pudo eliminar la maquinaria.\n" + "Puede que ya esté eliminada o no exista.",
+                                    "Aviso",  MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al eliminar la maquinaria:\n" + ex.Message, "ERROR-EXCEPCION-102",
+                                MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+            try
+            {
+                FiltrarMaquinaria();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al buscar maquinaria:\n" + ex.Message,
+                                "ERROR-BUSQUEDA-104",
+                                MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void FiltrarMaquinaria()
+        {
+            try
+            {
+                string texto = textBox1.Text.Trim();
+
+                if (string.IsNullOrWhiteSpace(texto))
+                {
+                    CargarMaquinariaPorFiltro(filtroActual);
+                    return;
+                }
+
+                DataTable resultado = Maquinaria.BuscarMaquinaria(texto);
+                GenerarTarjetas(resultado);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al filtrar maquinaria:\n" + ex.Message,
+                                "ERROR-BUSQUEDA-104",
+                                MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
     }
 }
