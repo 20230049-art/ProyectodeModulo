@@ -37,7 +37,7 @@ namespace Vista.GerenteMaquinaria
             try
             {
                 filtroActual = filtro;
-                idMaquinariaSeleccionada = -1; // resetear selección
+                idMaquinariaSeleccionada = -1; 
                 DataTable maquinaria;
 
                 switch (filtro)
@@ -72,7 +72,7 @@ namespace Vista.GerenteMaquinaria
                     Label lblVacio = new Label
                     {
                         Text = "No hay maquinaria para mostrar.",
-                        Font = new Font("Book Antiqua", 15),
+                        Font = new Font("Segoe UI", 14, FontStyle.Regular),
                         ForeColor = Color.FromArgb(100, 100, 100),
                         AutoSize = true,
                         Margin = new Padding(20)
@@ -113,50 +113,64 @@ namespace Vista.GerenteMaquinaria
         {
             Panel tarjeta = new Panel
             {
-                Width = 200,
-                Height = 230,
+                Width = 210,
+                Height = 250,
                 BackColor = Color.White,
-                Margin = new Padding(10),
+                Margin = new Padding(8),
                 Cursor = Cursors.Hand,
-                Tag = id 
+                Tag = id
             };
 
             tarjeta.Paint += (s, e) =>
             {
                 ControlPaint.DrawBorder(e.Graphics, tarjeta.ClientRectangle,
-                    Color.FromArgb(208, 112, 3), ButtonBorderStyle.Solid);
+                    Color.FromArgb(100, 180, 230), ButtonBorderStyle.Solid);  
             };
+
 
             PictureBox pic = new PictureBox
             {
-                Width = 180,
-                Height = 130,
+                Width = 190,
+                Height = 150,
                 Location = new Point(10, 10),
                 SizeMode = PictureBoxSizeMode.Zoom,
-                BackColor = Color.FromArgb(245, 228, 200),
+                BackColor = Color.FromArgb(230, 245, 255),  
                 Tag = id
             };
 
-            if (!string.IsNullOrWhiteSpace(rutaFoto) && File.Exists(rutaFoto))
+            if (!string.IsNullOrWhiteSpace(rutaFoto))
             {
                 try
                 {
-                    pic.Image = Image.FromFile(rutaFoto);
+                    string rutaCompleta = rutaFoto;
+                    if (!Path.IsPathRooted(rutaFoto))
+                        rutaCompleta = Path.Combine(Application.StartupPath, rutaFoto);
+
+                    if (File.Exists(rutaCompleta))
+                    {
+                        using (var stream = new FileStream(rutaCompleta, FileMode.Open, FileAccess.Read))
+                        {
+                            pic.Image = Image.FromStream(stream);
+                        }
+                    }
                 }
-                catch
+                catch (Exception ex)
                 {
+                    MessageBox.Show( "No se pudo cargar la fotografía de la maquinaria.\n\n" + ex.Message, "ERROR-EXCEPCION-102",
+                    MessageBoxButtons.OK,  MessageBoxIcon.Warning
+                    );
                 }
             }
 
             Label lblNombre = new Label
             {
                 Text = nombre,
-                Font = new Font("Book Antiqua", 11, FontStyle.Bold),
-                ForeColor = Color.FromArgb(64, 6, 6),
+                Font = new Font("Segoe UI", 12, FontStyle.Regular),   
+                ForeColor = Color.FromArgb(30, 60, 100),             
                 AutoSize = false,
-                Width = 180,
+                Width = 190,
                 Height = 30,
-                Location = new Point(10, 148),
+                Location = new Point(10, 165),
                 TextAlign = ContentAlignment.MiddleCenter,
                 Tag = id
             };
@@ -164,12 +178,12 @@ namespace Vista.GerenteMaquinaria
             Label lblEstado = new Label
             {
                 Text = estado,
-                Font = new Font("Bookman Old Style", 10, FontStyle.Italic),
+                Font = new Font("Segoe UI", 11, FontStyle.Regular),    
                 ForeColor = ObtenerColorEstado(estado),
                 AutoSize = false,
-                Width = 180,
+                Width = 190,
                 Height = 25,
-                Location = new Point(10, 180),
+                Location = new Point(10, 200),
                 TextAlign = ContentAlignment.MiddleCenter,
                 Tag = id
             };
@@ -200,12 +214,10 @@ namespace Vista.GerenteMaquinaria
                 foreach (Control c in flowLayoutPanel1.Controls)
                 {
                     if (c is Panel p)
-                    {
                         p.BackColor = Color.White;
-                    }
                 }
 
-                tarjeta.BackColor = Color.FromArgb(249, 190, 121); 
+                tarjeta.BackColor = Color.FromArgb(200, 230, 255);  
                 idMaquinariaSeleccionada = id;
             }
             catch (Exception ex)
@@ -245,10 +257,10 @@ namespace Vista.GerenteMaquinaria
         {
             switch (estado)
             {
-                case "Activa": return Color.FromArgb(0, 120, 0);    
-                case "Inactiva": return Color.FromArgb(180, 0, 0);  
-                case "Libre": return Color.FromArgb(0, 80, 160);    
-                default: return Color.Black;
+                case "Activa": return Color.FromArgb(0, 130, 60);    
+                case "Inactiva": return Color.FromArgb(200, 30, 30);   
+                case "Libre": return Color.FromArgb(20, 90, 180);   
+                default: return Color.Gray;
             }
         }
 
@@ -272,6 +284,11 @@ namespace Vista.GerenteMaquinaria
                 MessageBox.Show("Error al abrir el formulario de agregar: " + ex.Message,
                         "ERROR-CAMBIO-103", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        private void btnAgregar_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

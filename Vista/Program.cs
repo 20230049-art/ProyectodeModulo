@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Vista.GerenteClientes;
 using Vista.Iniciar_Sesion;
+using static Vista.frmInicio;
 
 namespace Vista
 {
@@ -17,7 +19,7 @@ namespace Vista
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new frmIniciarSesion());
+            Application.Run(new FormInicio());
         }
     }
 }

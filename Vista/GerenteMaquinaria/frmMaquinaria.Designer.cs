@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.panel5 = new System.Windows.Forms.Panel();
+            this.pictureBox2 = new System.Windows.Forms.PictureBox();
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.panel4 = new System.Windows.Forms.Panel();
@@ -50,14 +51,13 @@
             this.button2 = new System.Windows.Forms.Button();
             this.btnAgregar = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
-            this.pictureBox2 = new System.Windows.Forms.PictureBox();
             this.panel5.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             this.flowLayoutPanel1.SuspendLayout();
             this.pnlFondo.SuspendLayout();
             this.panel3.SuspendLayout();
             this.panel7.SuspendLayout();
             this.pnlVistaMaquinaria.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             this.SuspendLayout();
             // 
             // panel5
@@ -74,6 +74,17 @@
             this.panel5.Name = "panel5";
             this.panel5.Size = new System.Drawing.Size(1469, 122);
             this.panel5.TabIndex = 2;
+            // 
+            // pictureBox2
+            // 
+            this.pictureBox2.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.pictureBox2.Image = global::Vista.Properties.Resources.gente_pic;
+            this.pictureBox2.Location = new System.Drawing.Point(1238, 37);
+            this.pictureBox2.Name = "pictureBox2";
+            this.pictureBox2.Size = new System.Drawing.Size(58, 55);
+            this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pictureBox2.TabIndex = 15;
+            this.pictureBox2.TabStop = false;
             // 
             // label2
             // 
@@ -160,7 +171,7 @@
             this.pnlFondo.Controls.Add(this.panel2);
             this.pnlFondo.Location = new System.Drawing.Point(3, 3);
             this.pnlFondo.Name = "pnlFondo";
-            this.pnlFondo.Size = new System.Drawing.Size(471, 388);
+            this.pnlFondo.Size = new System.Drawing.Size(460, 388);
             this.pnlFondo.TabIndex = 0;
             // 
             // panel2
@@ -174,7 +185,7 @@
             // panel3
             // 
             this.panel3.Controls.Add(this.panel6);
-            this.panel3.Location = new System.Drawing.Point(480, 3);
+            this.panel3.Location = new System.Drawing.Point(469, 3);
             this.panel3.Name = "panel3";
             this.panel3.Size = new System.Drawing.Size(471, 388);
             this.panel3.TabIndex = 1;
@@ -190,7 +201,7 @@
             // panel7
             // 
             this.panel7.Controls.Add(this.panel8);
-            this.panel7.Location = new System.Drawing.Point(957, 3);
+            this.panel7.Location = new System.Drawing.Point(946, 3);
             this.panel7.Name = "panel7";
             this.panel7.Size = new System.Drawing.Size(471, 388);
             this.panel7.TabIndex = 2;
@@ -301,6 +312,7 @@
             this.btnAgregar.TabIndex = 10;
             this.btnAgregar.Text = "Eliminar";
             this.btnAgregar.UseVisualStyleBackColor = false;
+            this.btnAgregar.Click += new System.EventHandler(this.btnAgregar_Click);
             // 
             // button1
             // 
@@ -317,17 +329,6 @@
             this.button1.UseVisualStyleBackColor = false;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
-            // pictureBox2
-            // 
-            this.pictureBox2.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.pictureBox2.Image = global::Vista.Properties.Resources.gente_pic;
-            this.pictureBox2.Location = new System.Drawing.Point(1238, 37);
-            this.pictureBox2.Name = "pictureBox2";
-            this.pictureBox2.Size = new System.Drawing.Size(58, 55);
-            this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.pictureBox2.TabIndex = 15;
-            this.pictureBox2.TabStop = false;
-            // 
             // frmMaquinaria
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -342,12 +343,12 @@
             this.Text = "frmMaquinaria";
             this.panel5.ResumeLayout(false);
             this.panel5.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
             this.flowLayoutPanel1.ResumeLayout(false);
             this.pnlFondo.ResumeLayout(false);
             this.panel3.ResumeLayout(false);
             this.panel7.ResumeLayout(false);
             this.pnlVistaMaquinaria.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
             this.ResumeLayout(false);
 
         }

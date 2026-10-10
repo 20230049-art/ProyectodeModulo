@@ -62,11 +62,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="frmInicio.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="frmPatallaNegra.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="frmPatallaNegra.Designer.cs">
       <DependentUpon>frmPatallaNegra.cs</DependentUpon>
+    </Compile>
+    <Compile Include="frmVistaCliente.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmVistaCliente.Designer.cs">
+      <DependentUpon>frmVistaCliente.cs</DependentUpon>
     </Compile>
     <Compile Include="GerenteClientes\frmActualizarCliente.cs">
       <SubType>Form</SubType>
@@ -121,6 +130,12 @@
     </Compile>
     <Compile Include="GerenteMaquinaria\frmMaquinaria.Designer.cs">
       <DependentUpon>frmMaquinaria.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GerentePedidos\AgregarPedido.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GerentePedidos\AgregarPedido.Designer.cs">
+      <DependentUpon>AgregarPedido.cs</DependentUpon>
     </Compile>
     <Compile Include="GerentePedidos\frmPedidos.cs">
       <SubType>Form</SubType>
@@ -189,6 +204,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="GerenteMaquinaria\frmMaquinaria.resx">
       <DependentUpon>frmMaquinaria.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GerentePedidos\AgregarPedido.resx">
+      <DependentUpon>AgregarPedido.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GerentePedidos\frmPedidos.resx">
       <DependentUpon>frmPedidos.cs</DependentUpon>

@@ -79,8 +79,7 @@ namespace Modelos.Entidades
             {
                 using (SqlConnection connection = Conexion.Conectar())
                 {
-                    // OJO: La vista en tu BD se llama "istaMaquinariaInactiva" (sin la V)
-                    string comando = "SELECT * FROM istaMaquinariaInactiva;";
+                    string comando = "SELECT * FROM VistaMaquinariaInactiva;";
                     using (SqlDataAdapter ad = new SqlDataAdapter(comando, connection))
                     {
                         ad.Fill(dt);
@@ -123,7 +122,7 @@ namespace Modelos.Entidades
             return dt;
         }
 
-        public static void AgregarMaquinaria(Maquinaria nuevaMaquinaria)
+        public static string AgregarMaquinaria(Maquinaria nuevaMaquinaria)
         {
             try
             {
@@ -136,14 +135,19 @@ namespace Modelos.Entidades
                         command.Parameters.Add("@NombreMaquinaria", SqlDbType.VarChar).Value = nuevaMaquinaria.NombreMaquinaria;
                         command.Parameters.Add("@Foto", SqlDbType.VarChar).Value = nuevaMaquinaria.Foto ?? "";
 
-                        command.ExecuteNonQuery();
+                        object resultado = command.ExecuteScalar();
+                        return resultado == null || resultado == DBNull.Value ? "ERROR" : resultado.ToString();
                     }
                 }
             }
             catch (SqlException ex)
             {
-                MessageBox.Show("Error al agregar la maquinaria: " + ex.Message,
-                        "ERROR-SQL-100", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Error al agregar la maquinaria:\n" + ex.Message,
+                                "ERROR-SQL-100",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Error);
+
+                return "ERROR";
             }
         }
 
