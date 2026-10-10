@@ -43,9 +43,14 @@
             this.panel7 = new System.Windows.Forms.Panel();
             this.panel8 = new System.Windows.Forms.Panel();
             this.pnlVistaMaquinaria = new System.Windows.Forms.Panel();
+            this.btnActivaa = new System.Windows.Forms.Button();
+            this.btnInactiva = new System.Windows.Forms.Button();
+            this.btnTodos = new System.Windows.Forms.Button();
+            this.button3 = new System.Windows.Forms.Button();
+            this.button2 = new System.Windows.Forms.Button();
+            this.btnAgregar = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
-            this.btnAgregar = new System.Windows.Forms.Button();
             this.panel5.SuspendLayout();
             this.flowLayoutPanel1.SuspendLayout();
             this.pnlFondo.SuspendLayout();
@@ -200,6 +205,11 @@
             // 
             // pnlVistaMaquinaria
             // 
+            this.pnlVistaMaquinaria.Controls.Add(this.btnActivaa);
+            this.pnlVistaMaquinaria.Controls.Add(this.btnInactiva);
+            this.pnlVistaMaquinaria.Controls.Add(this.btnTodos);
+            this.pnlVistaMaquinaria.Controls.Add(this.button3);
+            this.pnlVistaMaquinaria.Controls.Add(this.button2);
             this.pnlVistaMaquinaria.Controls.Add(this.btnAgregar);
             this.pnlVistaMaquinaria.Controls.Add(this.button1);
             this.pnlVistaMaquinaria.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -208,30 +218,75 @@
             this.pnlVistaMaquinaria.Size = new System.Drawing.Size(1924, 1033);
             this.pnlVistaMaquinaria.TabIndex = 4;
             // 
-            // button1
+            // btnActivaa
             // 
-            this.button1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(166)))), ((int)(((byte)(199)))));
-            this.button1.FlatAppearance.BorderSize = 0;
-            this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button1.Font = new System.Drawing.Font("Franklin Gothic Book", 13.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button1.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.button1.Location = new System.Drawing.Point(1077, 136);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(192, 43);
-            this.button1.TabIndex = 1;
-            this.button1.Text = "Agregar";
-            this.button1.UseVisualStyleBackColor = false;
+            this.btnActivaa.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(79)))), ((int)(((byte)(153)))), ((int)(((byte)(193)))));
+            this.btnActivaa.FlatAppearance.BorderSize = 0;
+            this.btnActivaa.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnActivaa.Font = new System.Drawing.Font("Goudy Old Style", 13.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnActivaa.ForeColor = System.Drawing.Color.Black;
+            this.btnActivaa.Location = new System.Drawing.Point(572, 132);
+            this.btnActivaa.Name = "btnActivaa";
+            this.btnActivaa.Size = new System.Drawing.Size(186, 44);
+            this.btnActivaa.TabIndex = 16;
+            this.btnActivaa.Text = "Activos";
+            this.btnActivaa.UseVisualStyleBackColor = false;
             // 
-            // pictureBox2
+            // btnInactiva
             // 
-            this.pictureBox2.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.pictureBox2.Image = global::Vista.Properties.Resources.gente_pic;
-            this.pictureBox2.Location = new System.Drawing.Point(1238, 37);
-            this.pictureBox2.Name = "pictureBox2";
-            this.pictureBox2.Size = new System.Drawing.Size(58, 55);
-            this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.pictureBox2.TabIndex = 15;
-            this.pictureBox2.TabStop = false;
+            this.btnInactiva.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(79)))), ((int)(((byte)(153)))), ((int)(((byte)(193)))));
+            this.btnInactiva.FlatAppearance.BorderSize = 0;
+            this.btnInactiva.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnInactiva.Font = new System.Drawing.Font("Goudy Old Style", 13.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnInactiva.ForeColor = System.Drawing.Color.Black;
+            this.btnInactiva.Location = new System.Drawing.Point(777, 132);
+            this.btnInactiva.Name = "btnInactiva";
+            this.btnInactiva.Size = new System.Drawing.Size(186, 44);
+            this.btnInactiva.TabIndex = 17;
+            this.btnInactiva.Text = "Libre";
+            this.btnInactiva.UseVisualStyleBackColor = false;
+            // 
+            // btnTodos
+            // 
+            this.btnTodos.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(79)))), ((int)(((byte)(153)))), ((int)(((byte)(193)))));
+            this.btnTodos.FlatAppearance.BorderSize = 0;
+            this.btnTodos.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnTodos.Font = new System.Drawing.Font("Goudy Old Style", 13.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnTodos.ForeColor = System.Drawing.Color.Black;
+            this.btnTodos.Location = new System.Drawing.Point(355, 132);
+            this.btnTodos.Name = "btnTodos";
+            this.btnTodos.Size = new System.Drawing.Size(186, 44);
+            this.btnTodos.TabIndex = 13;
+            this.btnTodos.Text = "Todos";
+            this.btnTodos.UseVisualStyleBackColor = false;
+            // 
+            // button3
+            // 
+            this.button3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(79)))), ((int)(((byte)(153)))), ((int)(((byte)(193)))));
+            this.button3.FlatAppearance.BorderSize = 0;
+            this.button3.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.button3.Font = new System.Drawing.Font("Goudy Old Style", 13.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.button3.ForeColor = System.Drawing.Color.Black;
+            this.button3.Location = new System.Drawing.Point(877, 502);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(186, 44);
+            this.button3.TabIndex = 15;
+            this.button3.Text = "Todos";
+            this.button3.UseVisualStyleBackColor = false;
+            // 
+            // button2
+            // 
+            this.button2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(79)))), ((int)(((byte)(153)))), ((int)(((byte)(193)))));
+            this.button2.FlatAppearance.BorderSize = 0;
+            this.button2.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.button2.Font = new System.Drawing.Font("Goudy Old Style", 13.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.button2.ForeColor = System.Drawing.Color.Black;
+            this.button2.Location = new System.Drawing.Point(869, 494);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(186, 44);
+            this.button2.TabIndex = 14;
+            this.button2.Text = "Todos";
+            this.button2.UseVisualStyleBackColor = false;
             // 
             // btnAgregar
             // 
@@ -246,6 +301,32 @@
             this.btnAgregar.TabIndex = 10;
             this.btnAgregar.Text = "Eliminar";
             this.btnAgregar.UseVisualStyleBackColor = false;
+            // 
+            // button1
+            // 
+            this.button1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(166)))), ((int)(((byte)(199)))));
+            this.button1.FlatAppearance.BorderSize = 0;
+            this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.button1.Font = new System.Drawing.Font("Franklin Gothic Book", 13.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.button1.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
+            this.button1.Location = new System.Drawing.Point(1077, 136);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(192, 43);
+            this.button1.TabIndex = 1;
+            this.button1.Text = "Agregar";
+            this.button1.UseVisualStyleBackColor = false;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
+            // pictureBox2
+            // 
+            this.pictureBox2.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.pictureBox2.Image = global::Vista.Properties.Resources.gente_pic;
+            this.pictureBox2.Location = new System.Drawing.Point(1238, 37);
+            this.pictureBox2.Name = "pictureBox2";
+            this.pictureBox2.Size = new System.Drawing.Size(58, 55);
+            this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pictureBox2.TabIndex = 15;
+            this.pictureBox2.TabStop = false;
             // 
             // frmMaquinaria
             // 
@@ -291,5 +372,10 @@
         private System.Windows.Forms.Panel panel8;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button btnAgregar;
+        private System.Windows.Forms.Button btnActivaa;
+        private System.Windows.Forms.Button btnInactiva;
+        private System.Windows.Forms.Button btnTodos;
+        private System.Windows.Forms.Button button3;
+        private System.Windows.Forms.Button button2;
     }
 }

@@ -33,8 +33,24 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="BCrypt-Net-Next, Version=4.2.0.0, Culture=neutral, PublicKeyToken=1e11be04b6288443, processorArchitecture=MSIL">
+      <HintPath>..\packages\BCrypt.Net-Next.4.2.0\lib\net48\BCrypt-Net-Next.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Buffers, Version=4.0.5.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Buffers.4.6.1\lib\net462\System.Buffers.dll</HintPath>
+    </Reference>
     <Reference Include="System.Core" />
+    <Reference Include="System.Memory, Version=4.0.5.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Memory.4.6.3\lib\net462\System.Memory.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Numerics.Vectors, Version=4.1.6.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Numerics.Vectors.4.6.1\lib\net462\System.Numerics.Vectors.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=6.0.3.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.6.1.2\lib\net462\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -46,17 +62,59 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="frmPatallaNegra.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmPatallaNegra.Designer.cs">
+      <DependentUpon>frmPatallaNegra.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GerenteClientes\frmActualizarCliente.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GerenteClientes\frmActualizarCliente.Designer.cs">
+      <DependentUpon>frmActualizarCliente.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GerenteClientes\frmAgregarCliente.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GerenteClientes\frmAgregarCliente.Designer.cs">
+      <DependentUpon>frmAgregarCliente.cs</DependentUpon>
+    </Compile>
     <Compile Include="GerenteClientes\frmClientescs.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="GerenteClientes\frmClientescs.Designer.cs">
       <DependentUpon>frmClientescs.cs</DependentUpon>
     </Compile>
+    <Compile Include="GerenteInventario\frmActualizarInsumo.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GerenteInventario\frmActualizarInsumo.Designer.cs">
+      <DependentUpon>frmActualizarInsumo.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GerenteInventario\frmAgregarInsumo.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GerenteInventario\frmAgregarInsumo.Designer.cs">
+      <DependentUpon>frmAgregarInsumo.cs</DependentUpon>
+    </Compile>
     <Compile Include="GerenteInventario\frmInventario.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="GerenteInventario\frmInventario.Designer.cs">
       <DependentUpon>frmInventario.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GerenteMaquinaria\frmActualizarMaquinaria.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GerenteMaquinaria\frmActualizarMaquinaria.Designer.cs">
+      <DependentUpon>frmActualizarMaquinaria.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GerenteMaquinaria\frmAgregarMaquinaria.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GerenteMaquinaria\frmAgregarMaquinaria.Designer.cs">
+      <DependentUpon>frmAgregarMaquinaria.cs</DependentUpon>
     </Compile>
     <Compile Include="GerenteMaquinaria\frmMaquinaria.cs">
       <SubType>Form</SubType>
@@ -102,11 +160,32 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="frmPatallaNegra.resx">
+      <DependentUpon>frmPatallaNegra.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GerenteClientes\frmActualizarCliente.resx">
+      <DependentUpon>frmActualizarCliente.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GerenteClientes\frmAgregarCliente.resx">
+      <DependentUpon>frmAgregarCliente.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="GerenteClientes\frmClientescs.resx">
       <DependentUpon>frmClientescs.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="GerenteInventario\frmActualizarInsumo.resx">
+      <DependentUpon>frmActualizarInsumo.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GerenteInventario\frmAgregarInsumo.resx">
+      <DependentUpon>frmAgregarInsumo.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="GerenteInventario\frmInventario.resx">
       <DependentUpon>frmInventario.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GerenteMaquinaria\frmActualizarMaquinaria.resx">
+      <DependentUpon>frmActualizarMaquinaria.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GerenteMaquinaria\frmAgregarMaquinaria.resx">
+      <DependentUpon>frmAgregarMaquinaria.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GerenteMaquinaria\frmMaquinaria.resx">
       <DependentUpon>frmMaquinaria.cs</DependentUpon>
@@ -139,6 +218,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -161,6 +241,11 @@
   <ItemGroup>
     <None Include="Resources\gente-pic.png" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\Modelos\Modelos.csproj">
+      <Project>{4754BDB7-DE49-4F5F-8DAE-0B52A9143BE3}</Project>
+      <Name>Modelos</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

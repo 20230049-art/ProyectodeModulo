@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.pnlVistaIniciarSesion = new System.Windows.Forms.Panel();
+            this.button1 = new System.Windows.Forms.Button();
             this.btnIniciarSesion = new System.Windows.Forms.Button();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.textBox2 = new System.Windows.Forms.TextBox();
@@ -41,7 +42,6 @@
             this.panel3 = new System.Windows.Forms.Panel();
             this.panel1 = new System.Windows.Forms.Panel();
             this.panel2 = new System.Windows.Forms.Panel();
-            this.button1 = new System.Windows.Forms.Button();
             this.pnlVistaIniciarSesion.SuspendLayout();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
@@ -66,6 +66,17 @@
             this.pnlVistaIniciarSesion.Name = "pnlVistaIniciarSesion";
             this.pnlVistaIniciarSesion.Size = new System.Drawing.Size(1924, 1033);
             this.pnlVistaIniciarSesion.TabIndex = 0;
+            // 
+            // button1
+            // 
+            this.button1.Font = new System.Drawing.Font("High Tower Text", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.button1.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(166)))), ((int)(((byte)(207)))));
+            this.button1.Location = new System.Drawing.Point(1196, 782);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(457, 56);
+            this.button1.TabIndex = 12;
+            this.button1.Text = "¿Olvidaste la contraseña?";
+            this.button1.UseVisualStyleBackColor = true;
             // 
             // btnIniciarSesion
             // 
@@ -187,17 +198,6 @@
             this.panel2.Size = new System.Drawing.Size(1920, 467);
             this.panel2.TabIndex = 1;
             // 
-            // button1
-            // 
-            this.button1.Font = new System.Drawing.Font("High Tower Text", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button1.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(166)))), ((int)(((byte)(207)))));
-            this.button1.Location = new System.Drawing.Point(1196, 782);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(457, 56);
-            this.button1.TabIndex = 12;
-            this.button1.Text = "¿Olvidaste la contraseña?";
-            this.button1.UseVisualStyleBackColor = true;
-            // 
             // frmIniciarSesion
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -209,6 +209,7 @@
             this.MinimumSize = new System.Drawing.Size(1000, 500);
             this.Name = "frmIniciarSesion";
             this.Text = "frmIniciarSesion";
+            this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.pnlVistaIniciarSesion.ResumeLayout(false);
             this.pnlVistaIniciarSesion.PerformLayout();
             this.panel1.ResumeLayout(false);
