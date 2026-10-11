@@ -65,14 +65,15 @@
   <ItemGroup>
     <Compile Include="Conexion_DB\Conexion.cs" />
     <Compile Include="Entidades\Clientes.cs" />
+    <Compile Include="Entidades\Datos.cs" />
     <Compile Include="Entidades\Insumos.cs" />
     <Compile Include="Entidades\Maquinaria.cs" />
     <Compile Include="Entidades\Pedido.cs" />
     <Compile Include="Entidades\Persona.cs" />
-    <Compile Include="Entidades\Reportes.cs" />
     <Compile Include="Entidades\ReportesPdf.cs" />
     <Compile Include="Entidades\Rol.cs" />
     <Compile Include="Entidades\Seguridad.cs" />
+    <Compile Include="Entidades\Sesion.cs" />
     <Compile Include="Logiin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

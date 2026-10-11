@@ -98,7 +98,7 @@ namespace Vista.Iniciar_Sesion
                         break;
 
                     case "Empleado":
-                        abrirForm(new Vista.frmOperador.FormAdmin());  
+                        abrirForm(new Vista.frmOperador.FormOperador());  
                         break;
 
                     case "Cliente":

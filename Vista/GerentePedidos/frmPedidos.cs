@@ -235,7 +235,6 @@ namespace Vista.GerentePedidos
                 tarjeta.Controls.Add(lblTotal);
                 tarjeta.Controls.Add(lblEstado);
 
-                // Eventos
                 EventHandler seleccionar = (s, e) =>
                 {
                     if (panelSeleccionado != null)
@@ -248,8 +247,15 @@ namespace Vista.GerentePedidos
 
                 EventHandler actualizar = (s, e) =>
                 {
+                    frmPatallaNegra fondo = new frmPatallaNegra();
+                    fondo.StartPosition = FormStartPosition.CenterParent;
+                    fondo.WindowState = FormWindowState.Maximized;
+                    fondo.Show();
+
                     frmActualizarPedido frm = new frmActualizarPedido(id);
                     DialogResult resultado = frm.ShowDialog();
+                    fondo.Close();
+
                     if (resultado == DialogResult.OK)
                         CargarPedidosPorFiltro(filtroActual);
                 };
@@ -278,6 +284,83 @@ namespace Vista.GerentePedidos
             {
                 case "En Proceso": return Color.FromArgb(200, 120, 0);
                 default: return Color.Black;
+            }
+        }
+
+        private void btnAgregar_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (idPedidoSeleccionado <= 0)
+                {
+                    MessageBox.Show("Debe seleccionar un pedido de la lista para eliminar.",
+                        "Sin selección", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                DialogResult r = MessageBox.Show(
+                    "¿Está seguro de eliminar el pedido seleccionado?\n\n" +
+                    "Podrá restaurarlo después si lo necesita.",
+                    "Confirmar eliminación", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+                if (r != DialogResult.Yes) return;
+
+                bool eliminado = Pedido.EliminarPedido(idPedidoSeleccionado);
+
+                if (eliminado)
+                {
+                    MessageBox.Show("Pedido eliminado correctamente.",
+                        "Operación exitosa", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                    idPedidoSeleccionado = -1;
+                    panelSeleccionado = null;
+
+                    CargarPedidosPorFiltro(filtroActual);
+                }
+                else
+                {
+                    MessageBox.Show("No se pudo eliminar el pedido.\n" +
+                                    "Puede que ya esté eliminado o no exista.",
+                        "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al eliminar el pedido:\n" + ex.Message,
+                    "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+           CargarPedidosBuscando(textBox1.Text);
+        }
+
+        private void CargarPedidosBuscando(string filtro)
+        {
+            try
+            {
+                idPedidoSeleccionado = -1;
+                panelSeleccionado = null;
+
+                DataTable pedidos;
+
+                if (string.IsNullOrWhiteSpace(filtro))
+                {
+                    CargarPedidosPorFiltro(filtroActual);
+                    return;
+                }
+                else
+                {
+                    pedidos = Pedido.BuscarPedido(filtro.Trim());
+                }
+
+                GenerarTarjetas(pedidos);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al buscar pedidos:\n" + ex.Message,
+                    "IMPREXA", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
     }

@@ -13,6 +13,7 @@ using Vista.GerenteMaquinaria;
 using Vista.GerentePedidos;
 using Vista.GerenteReportes;
 using Vista.GerenteUsuario;
+using Vista.Iniciar_Sesion;
 
 namespace Vista.InicioGerente
 {
@@ -83,6 +84,18 @@ namespace Vista.InicioGerente
         private void btnReportes_Click(object sender, EventArgs e)
         {
             abrirForm(new frmReportes());
+        }
+
+        private void btnCerrarSesion_Click(object sender, EventArgs e)
+        {
+            DialogResult resultado = MessageBox.Show("¿Estás seguro de que deseas cerrar sesión?", "Cerrar sesión",
+             MessageBoxButtons.YesNo, MessageBoxIcon.Question
+    );
+
+            if (resultado == DialogResult.Yes)
+            {
+                this.Close();
+            }
         }
     }
 }

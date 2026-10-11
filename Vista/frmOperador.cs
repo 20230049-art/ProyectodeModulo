@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Modelos.Conexion_DB;
+using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlClient;
 using System.Drawing;
 using System.Drawing.Drawing2D;
@@ -9,6 +11,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static Vista.frmOperador;
 
 namespace Vista
 {
@@ -19,17 +22,35 @@ namespace Vista
             public int Total;
             public List<object[]> Filas = new List<object[]>();
         }
-        /// <summary>
-        /// Fernando Antonio Martinez Beltran 
-        /// </summary>
+
+        //  CAPA DE DATOS
+
         public static class Db
         {
-            public static string ConnectionString =
-                @"Server=localhost\SQLEXPRESS;Database=Imprexa;Trusted_Connection=True;TrustServerCertificate=True;";
+            static List<object[]> Leer(string sql, Action<SqlCommand> pars)
+            {
+                var lista = new List<object[]>();
+                using (var cn = Conexion.Conectar())
+                {
+                    if (cn == null) return lista;
+                    using (var cmd = new SqlCommand(sql, cn))
+                    {
+                        if (pars != null) pars(cmd);
+                        using (var r = cmd.ExecuteReader())
+                            while (r.Read())
+                            {
+                                var o = new object[r.FieldCount];
+                                r.GetValues(o);
+                                lista.Add(o);
+                            }
+                    }
+                }
+                return lista;
+            }
 
             public class Resumen
             {
-                public int Total, Pendiente, EnProduccion, Terminado, Entregado;
+                public int Total, Pendiente, EnProduccion, Terminado, Entregado, Cancelado;
                 public int MaqOperativas, MaqTotal, InsumosBajos;
             }
 
@@ -37,88 +58,107 @@ namespace Vista
             {
                 var res = new Resumen();
                 const string sql = @"
-                SELECT Estado, COUNT(*) FROM dbo.Pedidos GROUP BY Estado;
-                SELECT COUNT(*), ISNULL(SUM(CASE WHEN Estado = N'Operativa' THEN 1 ELSE 0 END), 0) FROM dbo.Maquinas;
-                SELECT COUNT(*) FROM dbo.Insumos WHERE Cantidad <= StockMinimo;";
-                using (var cn = new SqlConnection(ConnectionString))
-                using (var cmd = new SqlCommand(sql, cn))
+                    SELECT
+                        COUNT(*),
+                        ISNULL(SUM(CASE WHEN IdEstadoPedido = 1 THEN 1 ELSE 0 END), 0),
+                        ISNULL(SUM(CASE WHEN IdEstadoPedido = 2 THEN 1 ELSE 0 END), 0),
+                        ISNULL(SUM(CASE WHEN IdEstadoPedido = 3 THEN 1 ELSE 0 END), 0)
+                    FROM PedidosImpresion
+                    WHERE EliminadoPedido = 0;
+
+                    SELECT COUNT(*),
+                           ISNULL(SUM(CASE WHEN IdEstadoMaquinaria = 2 THEN 1 ELSE 0 END), 0)
+                    FROM Maquinaria
+                    WHERE EliminadoMaquinaria = 0;
+
+                    SELECT COUNT(*)
+                    FROM Insumos
+                    WHERE EliminadoInsumos = 0 AND CantidadInsumo = 0;
+                ";
+
+                using (var cn = Conexion.Conectar())
                 {
-                    cn.Open();
+                    if (cn == null) return res;
+                    using (var cmd = new SqlCommand(sql, cn))
                     using (var r = cmd.ExecuteReader())
                     {
-                        while (r.Read())
+                        if (r.Read())
                         {
-                            string est = r.GetString(0);
-                            int n = r.GetInt32(1);
-                            res.Total += n;
-                            if (est == "Pendiente") res.Pendiente = n;
-                            else if (est == "En producción") res.EnProduccion = n;
-                            else if (est == "Terminado") res.Terminado = n;
-                            else if (est == "Entregado") res.Entregado = n;
+                            res.Total = Convert.ToInt32(r.GetValue(0));
+                            res.EnProduccion = Convert.ToInt32(r.GetValue(1));
+                            res.Terminado = Convert.ToInt32(r.GetValue(2));
+                            res.Cancelado = Convert.ToInt32(r.GetValue(3));
+                            res.Pendiente = res.EnProduccion;
+                            res.Entregado = res.Terminado;
                         }
-                        r.NextResult();
-                        if (r.Read()) { res.MaqTotal = r.GetInt32(0); res.MaqOperativas = r.GetInt32(1); }
-                        r.NextResult();
-                        if (r.Read()) res.InsumosBajos = r.GetInt32(0);
+                        if (r.NextResult() && r.Read())
+                        {
+                            res.MaqTotal = Convert.ToInt32(r.GetValue(0));
+                            res.MaqOperativas = Convert.ToInt32(r.GetValue(1));
+                        }
+                        if (r.NextResult() && r.Read())
+                        {
+                            res.InsumosBajos = Convert.ToInt32(r.GetValue(0));
+                        }
                     }
                 }
                 return res;
             }
 
-            static List<object[]> Leer(string sql, Action<SqlCommand> pars)
-            {
-                var lista = new List<object[]>();
-                using (var cn = new SqlConnection(ConnectionString))
-                using (var cmd = new SqlCommand(sql, cn))
-                {
-                    if (pars != null) pars(cmd);
-                    cn.Open();
-                    using (var r = cmd.ExecuteReader())
-                        while (r.Read()) { var o = new object[r.FieldCount]; r.GetValues(o); lista.Add(o); }
-                }
-                return lista;
-            }
-
-            // Id, Cliente, Trabajo, Cantidad, Fecha, Estado
             public static List<object[]> Recientes(int n)
             {
                 const string sql = @"
-                SELECT TOP (@n) p.Id, ISNULL(c.Nombre, N'—'), p.Producto, p.Cantidad, p.Fecha, p.Estado
-                FROM dbo.Pedidos p LEFT JOIN dbo.Clientes c ON c.Id = p.ClienteId
-                ORDER BY p.Fecha DESC, p.Id DESC";
+                    SELECT TOP (@n)
+                        P.IdPedido,
+                        C.NombreCliente,
+                        C.ApellidoCliente,
+                        P.DescripcionPedido,
+                        P.CantidadPedido,
+                        P.FechaPedido,
+                        E.NombreEstadoPedido
+                    FROM PedidosImpresion P
+                    INNER JOIN Cliente C        ON C.IdCliente = P.IdCliente
+                    INNER JOIN EstadoPedido E   ON E.IdEstadoPedido = P.IdEstadoPedido
+                    WHERE P.EliminadoPedido = 0
+                    ORDER BY P.FechaPedido DESC, P.IdPedido DESC";
                 return Leer(sql, cmd => cmd.Parameters.AddWithValue("@n", n));
             }
 
-            // Nombre, Cantidad
             public static List<object[]> InsumosBajos(int n)
             {
                 const string sql = @"
-                SELECT TOP (@n) Nombre, Cantidad FROM dbo.Insumos
-                WHERE Cantidad <= StockMinimo
-                ORDER BY (Cantidad * 1.0 / StockMinimo), Nombre";
+                    SELECT TOP (@n) NombreInsumo, CantidadInsumo
+                    FROM Insumos
+                    WHERE EliminadoInsumos = 0 AND CantidadInsumo <= 5
+                    ORDER BY CantidadInsumo ASC, NombreInsumo";
                 return Leer(sql, cmd => cmd.Parameters.AddWithValue("@n", n));
             }
 
-            // Nombre, Estado
             public static List<object[]> MaquinasLista(int n)
             {
-                const string sql = "SELECT TOP (@n) Nombre, Estado FROM dbo.Maquinas ORDER BY Id";
+                const string sql = @"
+                    SELECT TOP (@n) M.NombreMaquinaria, E.EstadoActualMaquinaria
+                    FROM Maquinaria M
+                    INNER JOIN EstadoMaquinaria E ON E.IdEstadoMaquinaria = M.IdEstadoMaquinaria
+                    WHERE M.EliminadoMaquinaria = 0
+                    ORDER BY M.IdMaquinaria";
                 return Leer(sql, cmd => cmd.Parameters.AddWithValue("@n", n));
             }
 
-            // Paginación en el servidor (OFFSET / FETCH): solo viaja la página que se está viendo
             static PageData Consultar(string from, string select, string where, string orderBy,
                                       int pagina, int tamano, Action<SqlCommand> pars)
             {
                 var data = new PageData();
-                using (var cn = new SqlConnection(ConnectionString))
+                using (var cn = Conexion.Conectar())
                 {
-                    cn.Open();
+                    if (cn == null) return data;
+
                     using (var cmd = new SqlCommand("SELECT COUNT(*) FROM " + from + where, cn))
                     {
                         if (pars != null) pars(cmd);
                         data.Total = Convert.ToInt32(cmd.ExecuteScalar());
                     }
+
                     string sql = "SELECT " + select + " FROM " + from + where + " ORDER BY " + orderBy +
                                  " OFFSET @off ROWS FETCH NEXT @n ROWS ONLY";
                     using (var cmd = new SqlCommand(sql, cn))
@@ -127,7 +167,12 @@ namespace Vista
                         cmd.Parameters.AddWithValue("@off", (pagina - 1) * tamano);
                         cmd.Parameters.AddWithValue("@n", tamano);
                         using (var r = cmd.ExecuteReader())
-                            while (r.Read()) { var o = new object[r.FieldCount]; r.GetValues(o); data.Filas.Add(o); }
+                            while (r.Read())
+                            {
+                                var o = new object[r.FieldCount];
+                                r.GetValues(o);
+                                data.Filas.Add(o);
+                            }
                     }
                 }
                 return data;
@@ -144,12 +189,17 @@ namespace Vista
                 string q = (busqueda ?? "").Trim().TrimStart('#');
                 int id;
                 if (!int.TryParse(q, out id)) id = -1;
+
                 string where = " WHERE 1 = 1";
-                if (!string.IsNullOrEmpty(estado)) where += " AND p.Estado = @estado";
-                if (q.Length > 0) where += " AND (c.Nombre LIKE @q OR p.Producto LIKE @q OR p.Id = @id)";
-                return Consultar("dbo.Pedidos p LEFT JOIN dbo.Clientes c ON c.Id = p.ClienteId",
-                    "p.Id, ISNULL(c.Nombre, N'—'), p.Producto, p.Cantidad, p.Fecha, p.Estado",
-                    where, "p.Id DESC", pagina, tamano, cmd =>
+                if (!string.IsNullOrEmpty(estado)) where += " AND NombreEstadoPedido = @estado";
+                if (q.Length > 0) where += " AND (NombreCliente LIKE @q OR ApellidoCliente LIKE @q OR IdPedido = @id)";
+
+                return Consultar(
+                    "VistaPedidos",
+                    "IdPedido, NombreCliente, ApellidoCliente, DescripcionPedido, CantidadPedido, FechaPedido, NombreEstadoPedido",
+                    where, "IdPedido DESC",
+                    pagina, tamano,
+                    cmd =>
                     {
                         Params(cmd, estado, q);
                         if (q.Length > 0) cmd.Parameters.AddWithValue("@id", id);
@@ -159,52 +209,101 @@ namespace Vista
             public static PageData Maquinas(int pagina, int tamano, string busqueda, string estado)
             {
                 string q = (busqueda ?? "").Trim();
-                string where = " WHERE 1 = 1";
-                if (!string.IsNullOrEmpty(estado)) where += " AND m.Estado = @estado";
-                if (q.Length > 0) where += " AND (m.Nombre LIKE @q OR m.Tipo LIKE @q)";
-                return Consultar("dbo.Maquinas m", "m.Id, m.Nombre, m.Tipo, m.Estado",
-                    where, "m.Id", pagina, tamano, cmd => Params(cmd, estado, q));
+                string where = " WHERE M.EliminadoMaquinaria = 0";
+                if (!string.IsNullOrEmpty(estado)) where += " AND E.EstadoActualMaquinaria = @estado";
+                if (q.Length > 0) where += " AND M.NombreMaquinaria LIKE @q";
+
+                return Consultar(
+                    "Maquinaria M INNER JOIN EstadoMaquinaria E ON E.IdEstadoMaquinaria = M.IdEstadoMaquinaria",
+                    "M.IdMaquinaria, M.NombreMaquinaria, E.EstadoActualMaquinaria",
+                    where, "M.IdMaquinaria",
+                    pagina, tamano,
+                    cmd => Params(cmd, estado, q));
             }
 
             public static PageData Insumos(int pagina, int tamano, string busqueda, string estado)
             {
                 string q = (busqueda ?? "").Trim();
-                const string est = "CASE WHEN i.Cantidad <= i.StockMinimo THEN N'Bajo' ELSE N'Normal' END";
-                string where = " WHERE 1 = 1";
+                string est = "CASE WHEN I.IdEstadoInsumos = 2 THEN 'Agotado' ELSE 'Disponible' END";
+
+                string where = " WHERE I.EliminadoInsumos = 0";
                 if (!string.IsNullOrEmpty(estado)) where += " AND (" + est + ") = @estado";
-                if (q.Length > 0) where += " AND i.Nombre LIKE @q";
-                return Consultar("dbo.Insumos i", "i.Id, i.Nombre, i.Cantidad, i.StockMinimo, " + est,
-                    where, "CASE WHEN i.Cantidad <= i.StockMinimo THEN 0 ELSE 1 END, i.Nombre",
-                    pagina, tamano, cmd => Params(cmd, estado, q));
+                if (q.Length > 0) where += " AND I.NombreInsumo LIKE @q";
+
+                return Consultar(
+                    "Insumos I",
+                    "I.IdInsumos, I.NombreInsumo, I.CantidadInsumo, I.PrecioInsumo, I.IdEstadoInsumos, " + est,
+                    where,
+                    "CASE WHEN I.CantidadInsumo = 0 THEN 0 ELSE 1 END, I.NombreInsumo",
+                    pagina, tamano,
+                    cmd => Params(cmd, estado, q));
             }
 
             public static PageData Clientes(int pagina, int tamano, string busqueda, string estado)
             {
                 string q = (busqueda ?? "").Trim();
                 string where = " WHERE 1 = 1";
-                if (q.Length > 0) where += " AND (c.Nombre LIKE @q OR c.Correo LIKE @q)";
-                return Consultar("dbo.Clientes c",
-                    "c.Id, c.Nombre, ISNULL(c.Telefono, N'—'), ISNULL(c.Correo, N'—'), (SELECT COUNT(*) FROM dbo.Pedidos p WHERE p.ClienteId = c.Id)",
-                    where, "c.Nombre", pagina, tamano, cmd => Params(cmd, null, q));
+                if (q.Length > 0) where += " AND (NombreCliente LIKE @q OR ApellidoCliente LIKE @q OR CorreoCliente LIKE @q)";
+
+                return Consultar(
+                    "VistaClienteGerente",
+                    @"IdCliente, NombreCliente, ApellidoCliente,
+                      ISNULL(TelefonoCliente, '—'), ISNULL(CorreoCliente, '—'),
+                      (SELECT COUNT(*) FROM PedidosImpresion P WHERE P.IdCliente = VistaClienteGerente.IdCliente AND P.EliminadoPedido = 0)",
+                    where, "NombreCliente",
+                    pagina, tamano,
+                    cmd => Params(cmd, null, q));
             }
 
-            public static void CambiarEstado(string tabla, int id, string estado)
+            // ---------- CAMBIO DE ESTADO ----------
+            public static void CambiarEstadoPedido(int idPedido, int idEstado)
             {
-                if (tabla != "Pedidos" && tabla != "Maquinas") throw new ArgumentException("Tabla no permitida");
-                using (var cn = new SqlConnection(ConnectionString))
-                using (var cmd = new SqlCommand("UPDATE dbo." + tabla + " SET Estado = @e WHERE Id = @id", cn))
+                using (var cn = Conexion.Conectar())
                 {
-                    cmd.Parameters.AddWithValue("@e", estado);
-                    cmd.Parameters.AddWithValue("@id", id);
-                    cn.Open();
-                    cmd.ExecuteNonQuery();
+                    if (cn == null) return;
+                    using (var cmd = new SqlCommand("CambiarEstadoPedido", cn))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@IdPedido", idPedido);
+                        cmd.Parameters.AddWithValue("@IdEstadoPedido", idEstado);
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+            }
+
+            public static void CambiarEstadoMaquinaria(int idMaquinaria, int idEstado)
+            {
+                using (var cn = Conexion.Conectar())
+                {
+                    if (cn == null) return;
+                    using (var cmd = new SqlCommand(
+                        "UPDATE Maquinaria SET IdEstadoMaquinaria = @e WHERE IdMaquinaria = @id", cn))
+                    {
+                        cmd.Parameters.AddWithValue("@e", idEstado);
+                        cmd.Parameters.AddWithValue("@id", idMaquinaria);
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+            }
+
+            public static void CambiarEstadoInsumo(int idInsumo, int idEstado)
+            {
+                using (var cn = Conexion.Conectar())
+                {
+                    if (cn == null) return;
+                    using (var cmd = new SqlCommand("CambiarEstadoInsumo", cn))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@IdInsumos", idInsumo);
+                        cmd.Parameters.AddWithValue("@IdEstadoInsumos", idEstado);
+                        cmd.ExecuteNonQuery();
+                    }
                 }
             }
         }
 
-        // =====================================================================
         //  ESTILO, ICONOS Y UTILIDADES
-        // =====================================================================
+
         public static class Estilo
         {
             public static readonly float Scale = ObtenerEscala();
@@ -246,20 +345,18 @@ namespace Vista
                     .SetValue(c, true, null);
             }
 
-            // ---- Colores de las "pastillas" de estado ----
             public static void Pill(string estado, out Color bg, out Color fg, out string icon)
             {
                 switch (estado)
                 {
-                    case "En producción": bg = Color.FromArgb(255, 237, 216); fg = Color.FromArgb(235, 115, 15); icon = "gear"; break;
-                    case "Terminado": bg = Color.FromArgb(214, 243, 226); fg = Color.FromArgb(20, 140, 85); icon = "check"; break;
-                    case "Entregado": bg = Color.FromArgb(220, 236, 253); fg = Color.FromArgb(37, 99, 235); icon = "ring"; break;
-                    case "Pendiente": bg = Color.FromArgb(230, 238, 247); fg = Color.FromArgb(80, 100, 130); icon = "gear"; break;
-                    case "Operativa": bg = Color.FromArgb(214, 243, 226); fg = Color.FromArgb(20, 140, 85); icon = "dot"; break;
-                    case "Mantenimiento": bg = Color.FromArgb(255, 237, 216); fg = Color.FromArgb(235, 115, 15); icon = "dot"; break;
-                    case "Fuera de servicio": bg = Color.FromArgb(254, 226, 226); fg = Color.FromArgb(210, 45, 45); icon = "dot"; break;
-                    case "Bajo": bg = Color.FromArgb(254, 226, 226); fg = Color.FromArgb(210, 45, 45); icon = "gear"; break;
-                    case "Normal": bg = Color.FromArgb(214, 243, 226); fg = Color.FromArgb(20, 140, 85); icon = "check"; break;
+                    case "En Proceso": bg = Color.FromArgb(255, 237, 216); fg = Color.FromArgb(235, 115, 15); icon = "gear"; break;
+                    case "Finalizada": bg = Color.FromArgb(214, 243, 226); fg = Color.FromArgb(20, 140, 85); icon = "check"; break;
+                    case "Cancelada": bg = Color.FromArgb(254, 226, 226); fg = Color.FromArgb(210, 45, 45); icon = "dot"; break;
+                    case "Disponible": bg = Color.FromArgb(214, 243, 226); fg = Color.FromArgb(20, 140, 85); icon = "check"; break;
+                    case "Agotado": bg = Color.FromArgb(254, 226, 226); fg = Color.FromArgb(210, 45, 45); icon = "gear"; break;
+                    case "Libre": bg = Color.FromArgb(220, 236, 253); fg = Color.FromArgb(37, 99, 235); icon = "dot"; break;
+                    case "Activa": bg = Color.FromArgb(214, 243, 226); fg = Color.FromArgb(20, 140, 85); icon = "dot"; break;
+                    case "Inactiva": bg = Color.FromArgb(254, 226, 226); fg = Color.FromArgb(210, 45, 45); icon = "dot"; break;
                     default: bg = Color.FromArgb(230, 238, 247); fg = Color.FromArgb(80, 100, 130); icon = "dot"; break;
                 }
             }
@@ -287,7 +384,6 @@ namespace Vista
                 g.SmoothingMode = old;
             }
 
-            // ---- Tablas (DataGridView) con el mismo estilo ----
             public static void StyleGrid(DataGridView g)
             {
                 g.BackgroundColor = Color.White;
@@ -340,13 +436,14 @@ namespace Vista
                     {
                         HeaderText = "",
                         AutoSizeMode = DataGridViewAutoSizeColumnMode.None,
-                        Width = 56,
-                        MinimumWidth = 56,
+                        Width = 110,
+                        MinimumWidth = 110,
                         SortMode = DataGridViewColumnSortMode.NotSortable
                     };
                     c.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-                    c.DefaultCellStyle.Font = F(12, FontStyle.Bold);
-                    c.DefaultCellStyle.ForeColor = Gray;
+                    c.DefaultCellStyle.Font = F(9.5f, FontStyle.Bold);
+                    c.DefaultCellStyle.ForeColor = Teal;
+                    c.DefaultCellStyle.SelectionForeColor = Teal;
                     c.DefaultCellStyle.Padding = new Padding(0);
                     g.Columns.Add(c);
                 }
@@ -381,7 +478,8 @@ namespace Vista
             }
         }
 
-        // Iconos dibujados con código (no necesitan imágenes ni fuentes especiales)
+        //  ICONOS
+
         public static class Icons
         {
             public static void Draw(Graphics g, string name, RectangleF r, Color c, float stroke)
@@ -518,48 +616,147 @@ namespace Vista
             }
         }
 
-        // Cómo se muestran las filas de cada consulta en las tablas
+        //  FORMATOS
         public static class Formatos
         {
             public static object[] Pedido(object[] r)
             {
                 return new object[]
                 {
-                "#" + Convert.ToInt32(r[0]).ToString("000"), r[1], r[2],
-                Convert.ToInt32(r[3]).ToString("N0"), Convert.ToDateTime(r[4]).ToString("dd/MM/yyyy"), r[5], "···"
+                    "#" + Convert.ToInt32(r[0]).ToString("000"),
+                    r[1] + " " + r[2],
+                    r[3],
+                    Convert.ToInt32(r[4]).ToString("N0"),
+                    Convert.ToDateTime(r[5]).ToString("dd/MM/yyyy"),
+                    r[6],
+                    "···"
                 };
             }
-            public static object[] Maquina(object[] r) { return new object[] { r[1], r[2], r[3], "···" }; }
+
+            public static object[] Maquina(object[] r)
+            {
+                return new object[] { r[1], r[1], r[2], "···" };
+            }
+
             public static object[] Insumo(object[] r)
             {
-                return new object[] { r[1], Convert.ToInt32(r[2]).ToString("N0"), Convert.ToInt32(r[3]).ToString("N0"), r[4] };
+                return new object[]
+                {
+                    r[1],                                    // NombreInsumo
+                    Convert.ToInt32(r[2]).ToString("N0"),    // Cantidad
+                    Convert.ToDecimal(r[3]).ToString("C2"),  // Precio
+                    r[5],                                    // Estado (texto)
+                    "Cambiar ▾"                              // Botón de acción
+                };
             }
-            public static object[] Cliente(object[] r) { return new object[] { r[1], r[2], r[3], r[4] }; }
+
+            public static object[] Cliente(object[] r)
+            {
+                return new object[] { r[1] + " " + r[2], r[3], r[4], r[5] };
+            }
         }
 
-        // Menú "···" para cambiar el estado de un pedido o una máquina (se guarda en SQL Server)
+        //  ACCIONES
+
         public static class Acciones
         {
-            public static void MenuEstado(string tabla, int id, string actual, string[] estados, Action despues)
+            public static readonly string[] EstadosPedido = { "En Proceso", "Finalizada", "Cancelada" };
+            public static readonly string[] EstadosMaquina = { "Libre", "Activa", "Inactiva" };
+
+            public static void MenuEstadosPedido(int id, string actual, Action despues)
             {
-                var menu = new ContextMenuStrip();
-                menu.Font = Estilo.F(10);
+                var menu = new ContextMenuStrip { Font = Estilo.F(10) };
                 menu.Items.Add(new ToolStripMenuItem("Cambiar estado a:") { Enabled = false });
-                foreach (var est in estados)
+
+                var mapa = new (string nombre, int id)[]
                 {
-                    string nuevo = est;
-                    var item = new ToolStripMenuItem(nuevo) { Checked = (nuevo == actual) };
+                    ("En Proceso", 1),
+                    ("Finalizada", 2),
+                    ("Cancelada", 3)
+                };
+
+                foreach (var m in mapa)
+                {
+                    var item = new ToolStripMenuItem(m.nombre) { Checked = (m.nombre == actual) };
+                    int nuevoEstado = m.id;
                     item.Click += (s, e) =>
                     {
                         try
                         {
-                            Db.CambiarEstado(tabla, id, nuevo);
+                            Db.CambiarEstadoPedido(id, nuevoEstado);
                             if (despues != null) despues();
                         }
                         catch (Exception ex)
                         {
-                            MessageBox.Show("No se pudo cambiar el estado:\n\n" + ex.Message, "Error de base de datos",
-                                MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            MessageBox.Show("No se pudo cambiar el estado:\n\n" + ex.Message,
+                                "Error de base de datos", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
+                    };
+                    menu.Items.Add(item);
+                }
+                menu.Show(Cursor.Position);
+            }
+
+            public static void MenuEstadosInsumo(int id, string actual, Action despues)
+            {
+                var menu = new ContextMenuStrip { Font = Estilo.F(10) };
+                menu.Items.Add(new ToolStripMenuItem("Cambiar estado a:") { Enabled = false });
+
+                var mapa = new (string nombre, int id)[]
+                {
+                    ("Disponible", 1),
+                    ("Agotado", 2)
+                };
+
+                foreach (var m in mapa)
+                {
+                    var item = new ToolStripMenuItem(m.nombre) { Checked = (m.nombre == actual) };
+                    int nuevoEstado = m.id;
+                    item.Click += (s, e) =>
+                    {
+                        try
+                        {
+                            Db.CambiarEstadoInsumo(id, nuevoEstado);
+                            if (despues != null) despues();
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show("No se pudo cambiar el estado:\n\n" + ex.Message,
+                                "Error de base de datos", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
+                    };
+                    menu.Items.Add(item);
+                }
+                menu.Show(Cursor.Position);
+            }
+
+            public static void MenuEstadosMaquina(int id, string actual, Action despues)
+            {
+                var menu = new ContextMenuStrip { Font = Estilo.F(10) };
+                menu.Items.Add(new ToolStripMenuItem("Cambiar estado a:") { Enabled = false });
+
+                var mapa = new (string nombre, int id)[]
+                {
+                    ("Libre", 1),
+                    ("Activa", 2),
+                    ("Inactiva", 3)
+                };
+
+                foreach (var m in mapa)
+                {
+                    var item = new ToolStripMenuItem(m.nombre) { Checked = (m.nombre == actual) };
+                    int nuevoEstado = m.id;
+                    item.Click += (s, e) =>
+                    {
+                        try
+                        {
+                            Db.CambiarEstadoMaquinaria(id, nuevoEstado);
+                            if (despues != null) despues();
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show("No se pudo cambiar el estado:\n\n" + ex.Message,
+                                "Error de base de datos", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         }
                     };
                     menu.Items.Add(item);
@@ -568,9 +765,8 @@ namespace Vista
             }
         }
 
-        // =====================================================================
         //  CONTROLES PERSONALIZADOS
-        // =====================================================================
+
         public class RoundedPanel : Panel
         {
             public int Radius { get; set; } = 14;
@@ -627,7 +823,7 @@ namespace Vista
             public Color FillColor { get; set; } = Color.Transparent;
             public Color HoverColor { get; set; } = Color.FromArgb(28, 255, 255, 255);
             public Color BorderColor { get; set; } = Color.Transparent;
-            public string Icon { get; set; } = "";     // nombre del icono (ver clase Icons)
+            public string Icon { get; set; } = "";
             public bool CenterText { get; set; }
             private bool _hover;
 
@@ -673,7 +869,6 @@ namespace Vista
             }
         }
 
-        // Un icono suelto (ocupa todo el tamaño del control)
         public class IconBox : Control
         {
             public string IconName = "doc";
@@ -702,7 +897,6 @@ namespace Vista
             }
         }
 
-        // Tarjeta de resumen (Total de pedidos, En producción, etc.)
         public class StatCard : Control
         {
             public string Title = "", Value = "0", Sub = "", IconName = "doc";
@@ -751,7 +945,6 @@ namespace Vista
             }
         }
 
-        // Gráfico de dona "Pedidos por estado"
         public class DonutChart : Control
         {
             public int[] Values = new int[0];
@@ -814,7 +1007,6 @@ namespace Vista
             }
         }
 
-        // Leyenda de la dona (punto de color + nombre + cantidad)
         public class LegendList : Control
         {
             public string[] Names = new string[0];
@@ -849,10 +1041,9 @@ namespace Vista
             }
         }
 
-        // Lista corta "Insumos con bajo stock"
         public class MiniList : Control
         {
-            public List<object[]> Filas = new List<object[]>();   // Nombre, Cantidad
+            public List<object[]> Filas = new List<object[]>();
             static readonly Font FH = new Font("Segoe UI", 9f, FontStyle.Bold);
             static readonly Font FN = new Font("Segoe UI", 9.5f);
             static readonly Font FQ = new Font("Segoe UI", 10f, FontStyle.Bold);
@@ -888,14 +1079,13 @@ namespace Vista
                     TextRenderer.DrawText(g, nombre, FN, new Rectangle(Estilo.S(42), y, colQ - Estilo.S(44), rh), Estilo.Dark,
                         fl | TextFormatFlags.EndEllipsis);
                     TextRenderer.DrawText(g, cant.ToString(), FQ, new Rectangle(colQ, y, Estilo.S(60), rh), Estilo.Dark, fl);
-                    var ps = Estilo.PillSize("Bajo");
-                    Estilo.DrawPill(g, new Point(w - ps.Width - Estilo.S(12), y + (rh - ps.Height) / 2), "Bajo");
+                    var ps = Estilo.PillSize("Agotado");
+                    Estilo.DrawPill(g, new Point(w - ps.Width - Estilo.S(12), y + (rh - ps.Height) / 2), cant == 0 ? "Agotado" : "Disponible");
                     y += rh;
                 }
             }
         }
 
-        // Tarjeta pequeña de máquina (Offset 01, Digital 01...)
         public class MachineCard : Control
         {
             public string Nombre = "", Estado = "";
@@ -936,7 +1126,6 @@ namespace Vista
             }
         }
 
-        // Fecha y hora de la esquina superior derecha
         public class FechaBox : Control
         {
             public string L1 = "", L2 = "";
@@ -972,9 +1161,8 @@ namespace Vista
             }
         }
 
-        // =====================================================================
-        //  PÁGINA CON TABLA PAGINADA (Pedidos, Maquinaria, Insumos, Clientes)
-        // =====================================================================
+        //  PÁGINA CON TABLA PAGINADA
+
         public class PagedPage : Panel
         {
             public DataGridView Grid;
@@ -985,21 +1173,22 @@ namespace Vista
 
             readonly Func<int, int, string, string, PageData> loader;
             readonly Func<object[], object[]> formato;
+            readonly string tipoAccion;
             ComboBox cboEstado, cboTamano;
             Label lblInfo, lblPagina;
             RoundedButton bPrim, bAnt, bSig, bUlt;
             int pagina = 1, tamano = 10, totalPaginas = 1, total;
 
-            public PagedPage(string titulo, string subtitulo, string[] headers, float[] pesos, string[] filtroEstados,
-                             int pillCol, string tablaAccion, string[] estadosAccion,
+            public PagedPage(string titulo, string subtitulo, string[] headers, float[] pesos,
+                             string[] filtroEstados, int pillCol, string tipoAccion,
                              Func<int, int, string, string, PageData> loader, Func<object[], object[]> formato)
             {
                 this.loader = loader;
                 this.formato = formato;
+                this.tipoAccion = tipoAccion;
                 BackColor = Estilo.PageBg;
                 Padding = new Padding(26, 14, 26, 12);
 
-                // ----- Encabezado -----
                 var head = new Panel { Dock = DockStyle.Top, Height = 84, BackColor = Color.Transparent };
                 head.Controls.Add(Estilo.Lbl(titulo, 20, Estilo.Dark, FontStyle.Bold, 2, 6));
                 head.Controls.Add(Estilo.Lbl(subtitulo, 10.5f, Estilo.Gray, FontStyle.Regular, 4, 46));
@@ -1022,21 +1211,22 @@ namespace Vista
                     };
                 }
 
-                // ----- Tabla -----
                 var card = new RoundedPanel { Dock = DockStyle.Fill, Padding = new Padding(10) };
                 Grid = new DataGridView { Dock = DockStyle.Fill };
                 Estilo.StyleGrid(Grid);
-                Estilo.CrearColumnas(Grid, headers, pesos, tablaAccion != null);
-                int accionCol = tablaAccion != null ? headers.Length : -1;
+                Estilo.CrearColumnas(Grid, headers, pesos, tipoAccion != null);
+                int accionCol = tipoAccion != null ? headers.Length : -1;
                 Estilo.WireGrid(Grid, pillCol, accionCol, (id, actual) =>
-                    Acciones.MenuEstado(tablaAccion, id, actual, estadosAccion, () =>
-                    {
-                        Reload();
-                        if (OnCambio != null) OnCambio();
-                    }));
+                {
+                    if (tipoAccion == "pedido")
+                        Acciones.MenuEstadosPedido(id, actual, () => { Reload(); if (OnCambio != null) OnCambio(); });
+                    else if (tipoAccion == "maquina")
+                        Acciones.MenuEstadosMaquina(id, actual, () => { Reload(); if (OnCambio != null) OnCambio(); });
+                    else if (tipoAccion == "insumo")
+                        Acciones.MenuEstadosInsumo(id, actual, () => { Reload(); if (OnCambio != null) OnCambio(); });
+                });
                 card.Controls.Add(Grid);
 
-                // El orden importa: primero el centro (Fill), luego el pie (Bottom) y al final el encabezado (Top)
                 Controls.Add(card);
                 Controls.Add(BuildFooter());
                 Controls.Add(head);
@@ -1122,7 +1312,6 @@ namespace Vista
                 return cboEstado.SelectedItem.ToString();
             }
 
-            // Cambia el texto de búsqueda sin recargar (la recarga la hace quien muestre la página)
             public void SetBusqueda(string q) { Busqueda = q ?? ""; pagina = 1; }
 
             public void Reload()
@@ -1163,18 +1352,18 @@ namespace Vista
             }
         }
 
-        // =====================================================================
         //  FORMULARIO PRINCIPAL
-        // =====================================================================
-        public class FormAdmin : Form
+
+        public class FormOperador : Form
         {
-            static readonly string[] EstadosPedido = { "Pendiente", "En producción", "Terminado", "Entregado" };
-            static readonly string[] EstadosMaquina = { "Operativa", "Mantenimiento", "Fuera de servicio" };
+            static readonly string[] EstadosPedido = { "En Proceso", "Finalizada", "Cancelada" };
+            static readonly string[] EstadosMaquina = { "Libre", "Activa", "Inactiva" };
             static readonly Color[] ColoresEstado =
             {
-            Color.FromArgb(167, 139, 250), Color.FromArgb(251, 146, 60),
-            Color.FromArgb(74, 190, 130), Color.FromArgb(59, 130, 246)
-        };
+                Color.FromArgb(251, 146, 60),
+                Color.FromArgb(74, 190, 130),
+                Color.FromArgb(239, 68, 68)
+            };
             const string Placeholder = "Buscar en el sistema...";
 
             static readonly Font FLogo = new Font("Segoe UI", 21f, FontStyle.Bold);
@@ -1183,8 +1372,8 @@ namespace Vista
             static readonly Font FScript = new Font("Segoe Script", 17f, FontStyle.Italic);
 
             Panel sidebar, host, topbar, userPanel;
-            RoundedButton[] menu = new RoundedButton[7];
-            Panel[] pages = new Panel[7];
+            RoundedButton[] menu = new RoundedButton[5];
+            Panel[] pages = new Panel[5];
             int current;
 
             StatCard cardTotal, cardProd, cardMaq, cardIns;
@@ -1198,7 +1387,7 @@ namespace Vista
             Label lblDb;
             TextBox txtBuscar;
             bool phOn = true;
-            PagedPage pgPedidos, pgMaquinas, pgInsumos, pgClientes;
+            PagedPage pgPedidos, pgMaquinas, pgInsumos;
 
             System.Windows.Forms.Timer timer;
             int tick;
@@ -1206,12 +1395,12 @@ namespace Vista
             string ultimoError;
             bool avisoMostrado;
 
-            public FormAdmin()
+            public FormOperador()
             {
                 AutoScaleDimensions = new SizeF(96F, 96F);
                 AutoScaleMode = AutoScaleMode.Dpi;
 
-                Text = "IMPREXA - Panel de administración";
+                Text = "IMPREXA - Panel de operador";
                 var wa = Screen.PrimaryScreen.WorkingArea;
                 ClientSize = new Size((int)Math.Min(1366.0, wa.Width / Estilo.Scale - 40),
                                       (int)Math.Min(930.0, wa.Height / Estilo.Scale - 90));
@@ -1221,28 +1410,26 @@ namespace Vista
                 Font = Estilo.F(10);
                 DoubleBuffered = true;
 
-                // ----- Páginas -----
                 pages[0] = BuildInicio();
-                pages[1] = pgPedidos = new PagedPage("Pedidos de impresión", "Consulta y gestiona todos los pedidos de la imprenta.",
+                pages[1] = pgPedidos = new PagedPage("Pedidos de impresión",
+                    "Consulta y actualiza el estado de los pedidos.",
                     new[] { "#", "Cliente", "Trabajo", "Cantidad", "Fecha", "Estado" },
-                    new[] { 9f, 22f, 26f, 12f, 14f, 17f }, EstadosPedido, 5, "Pedidos", EstadosPedido,
-                    Db.Pedidos, Formatos.Pedido);
-                pages[2] = pgMaquinas = new PagedPage("Maquinaria", "Estado de las máquinas de producción.",
+                    new[] { 9f, 24f, 26f, 12f, 14f, 15f },
+                    EstadosPedido, 5, "pedido", Db.Pedidos, Formatos.Pedido);
+                pages[2] = pgMaquinas = new PagedPage("Maquinaria",
+                    "Estado de las máquinas de producción.",
                     new[] { "Máquina", "Tipo", "Estado" },
-                    new[] { 30f, 34f, 24f }, EstadosMaquina, 2, "Maquinas", EstadosMaquina,
-                    Db.Maquinas, Formatos.Maquina);
-                pages[3] = pgInsumos = new PagedPage("Insumos", "Control de papel, tintas y materiales.",
-                    new[] { "Insumo", "Cantidad", "Stock mínimo", "Estado" },
-                    new[] { 34f, 16f, 18f, 20f }, new[] { "Bajo", "Normal" }, 3, null, null,
-                    Db.Insumos, Formatos.Insumo);
-                pages[4] = pgClientes = new PagedPage("Clientes", "Clientes registrados y cantidad de pedidos.",
-                    new[] { "Cliente", "Teléfono", "Correo", "Pedidos" },
-                    new[] { 30f, 18f, 34f, 10f }, null, -1, null, null,
-                    Db.Clientes, Formatos.Cliente);
-                pages[5] = BuildPlaceholder("Reportes", "Aquí podrás generar reportes de producción, ventas e inventario.");
-                pages[6] = BuildPlaceholder("Usuarios y roles", "Aquí podrás administrar los usuarios del sistema y sus permisos.");
+                    new[] { 30f, 34f, 24f },
+                    EstadosMaquina, 2, "maquina", Db.Maquinas, Formatos.Maquina);
+                pages[3] = pgInsumos = new PagedPage("Insumos",
+                    "Control de papel, tintas y materiales.",
+                    new[] { "Insumo", "Cantidad", "Precio", "Estado" },
+                    new[] { 30f, 14f, 16f, 20f },
+                    new[] { "Disponible", "Agotado" }, 3, "insumo", Db.Insumos, Formatos.Insumo);
+                pages[4] = BuildPlaceholder("Reportes",
+                    "Aquí podrás generar reportes de producción, consumo de insumos y avance de pedidos.");
 
-                foreach (var pp in new[] { pgPedidos, pgMaquinas, pgInsumos, pgClientes })
+                foreach (var pp in new[] { pgPedidos, pgMaquinas, pgInsumos })
                 {
                     pp.OnError = ex => SetConexion(false, ex.Message);
                     pp.OnOk = () => SetConexion(true, null);
@@ -1262,7 +1449,6 @@ namespace Vista
 
                 ShowPage(0);
 
-                // Se conecta al abrir; después se actualiza sola cada 30 segundos
                 timer = new System.Windows.Forms.Timer { Interval = 1000 };
                 timer.Tick += (s, e) =>
                 {
@@ -1274,7 +1460,6 @@ namespace Vista
                 FormClosed += (s, e) => timer.Dispose();
             }
 
-            // ---------- Utilidades ----------
             void Clickable(Control c, EventHandler h)
             {
                 c.Cursor = Cursors.Hand;
@@ -1304,7 +1489,6 @@ namespace Vista
                 fechaBox.Set(now.ToString("d 'de' MMMM 'de' yyyy", ci), hora);
             }
 
-            // ---------- Barra lateral ----------
             void BuildSidebar()
             {
                 sidebar = new Panel { Dock = DockStyle.Left, Width = 262, BackColor = Estilo.Navy };
@@ -1314,13 +1498,11 @@ namespace Vista
                     g.SmoothingMode = SmoothingMode.AntiAlias;
                     int W = sidebar.Width, H = sidebar.Height;
 
-                    // Franjas decorativas
                     using (var b = new SolidBrush(Color.FromArgb(160, 30, 150, 200)))
                         g.FillPolygon(b, new[] { new Point(Estilo.S(30), H), new Point(W, H - Estilo.S(210)), new Point(W, H - Estilo.S(135)), new Point(Estilo.S(120), H) });
                     using (var b = new SolidBrush(Estilo.Orange))
                         g.FillPolygon(b, new[] { new Point(Estilo.S(120), H), new Point(W, H - Estilo.S(128)), new Point(W, H - Estilo.S(90)), new Point(Estilo.S(165), H) });
 
-                    // Logo
                     Icons.Draw(g, "doc", new RectangleF(Estilo.S(18), Estilo.S(16), Estilo.S(46), Estilo.S(46)), Color.White, 1.5f);
                     using (var b = new SolidBrush(Estilo.Navy))
                         g.FillEllipse(b, Estilo.S(8), Estilo.S(38), Estilo.S(30), Estilo.S(30));
@@ -1333,21 +1515,19 @@ namespace Vista
                     TextRenderer.DrawText(g, "Gestión inteligente de impresión", FSubLogo, new Point(x0 + Estilo.S(2), Estilo.S(52)),
                         Color.FromArgb(190, 210, 230), fl);
 
-                    // Separador antes de "Usuarios y roles"
                     using (var pen = new Pen(Color.FromArgb(45, 255, 255, 255)))
-                        g.DrawLine(pen, Estilo.S(24), Estilo.S(428), W - Estilo.S(24), Estilo.S(428));
+                        g.DrawLine(pen, Estilo.S(24), Estilo.S(408), W - Estilo.S(24), Estilo.S(408));
 
-                    // Eslogan
                     int y = H - Estilo.S(250);
-                    TextRenderer.DrawText(g, "Tu impresión,", FSlogan, new Point(Estilo.S(26), y), Color.White, fl);
-                    int wN = TextRenderer.MeasureText(g, "nuestro", FSlogan, new Size(1000, 100), fl).Width + Estilo.S(6);
-                    TextRenderer.DrawText(g, "nuestro", FSlogan, new Point(Estilo.S(26), y + Estilo.S(28)), Color.White, fl);
-                    TextRenderer.DrawText(g, "compromiso.", FScript, new Point(Estilo.S(26) + wN, y + Estilo.S(24)), Estilo.Cyan, fl);
+                    TextRenderer.DrawText(g, "Producción,", FSlogan, new Point(Estilo.S(26), y), Color.White, fl);
+                    int wN = TextRenderer.MeasureText(g, "en tus", FSlogan, new Size(1000, 100), fl).Width + Estilo.S(6);
+                    TextRenderer.DrawText(g, "en tus", FSlogan, new Point(Estilo.S(26), y + Estilo.S(28)), Color.White, fl);
+                    TextRenderer.DrawText(g, "manos.", FScript, new Point(Estilo.S(26) + wN, y + Estilo.S(24)), Estilo.Cyan, fl);
                 };
 
-                string[] names = { "Inicio", "Pedidos de impresión", "Maquinaria", "Insumos", "Clientes", "Reportes", "Usuarios y roles" };
-                string[] icons = { "home", "doc", "printer", "box", "user", "clipboard", "gear" };
-                for (int i = 0; i < 7; i++)
+                string[] names = { "Inicio", "Pedidos de impresión", "Maquinaria", "Insumos", "Reportes" };
+                string[] icons = { "home", "doc", "printer", "box", "clipboard" };
+                for (int i = 0; i < 5; i++)
                 {
                     int idx = i;
                     var b = new RoundedButton
@@ -1355,7 +1535,7 @@ namespace Vista
                         Text = names[i],
                         Icon = icons[i],
                         Size = new Size(236, 46),
-                        Location = new Point(13, i < 6 ? 118 + i * 50 : 444),
+                        Location = new Point(13, 118 + i * 50),
                         ForeColor = Color.White,
                         Font = Estilo.F(11)
                     };
@@ -1365,7 +1545,6 @@ namespace Vista
                 }
             }
 
-            // ---------- Barra superior ----------
             Panel BuildTopbar()
             {
                 topbar = new Panel { Dock = DockStyle.Top, Height = 84, BackColor = Color.White };
@@ -1375,7 +1554,6 @@ namespace Vista
                         e.Graphics.DrawLine(pen, 0, topbar.Height - 1, topbar.Width, topbar.Height - 1);
                 };
 
-                // Buscador
                 var fillBusca = Color.FromArgb(247, 250, 253);
                 var box = new RoundedPanel
                 {
@@ -1415,25 +1593,23 @@ namespace Vista
                 box.Click += (s, e) => txtBuscar.Focus();
                 topbar.Controls.Add(box);
 
-                // Estado de la conexión
                 lblDb = Estilo.Lbl("●  Conectando...", 9, Estilo.Gray, FontStyle.Regular, 0, 0);
                 lblDb.Cursor = Cursors.Hand;
                 lblDb.Click += (s, e) =>
                 {
                     if (!string.IsNullOrEmpty(ultimoError))
                         MessageBox.Show("No se pudo conectar a SQL Server:\n\n" + ultimoError +
-                            "\n\nRevisa la cadena de conexión (Db.ConnectionString) y que hayas ejecutado el script ImprexaAdmin.sql.",
+                            "\n\nRevisa la cadena de conexión de la clase Conexion.",
                             "Conexión", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     else
                         RefreshTodo();
                 };
                 topbar.Controls.Add(lblDb);
 
-                // Zona del usuario
                 userPanel = new Panel { Dock = DockStyle.Right, Width = 300, BackColor = Color.White };
                 bell = new IconBox { IconName = "bell", IconColor = Estilo.Dark, Stroke = 1.6f, Location = new Point(14, 26), Size = new Size(30, 30), Cursor = Cursors.Hand };
                 bell.Click += (s, e) =>
-                    MessageBox.Show("Tienes " + insumosBajos + " insumo(s) con stock bajo y " + pendientes + " pedido(s) pendiente(s).",
+                    MessageBox.Show("Tienes " + insumosBajos + " insumo(s) agotado(s) y " + pendientes + " pedido(s) en proceso.",
                         "Notificaciones", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 userPanel.Controls.Add(bell);
 
@@ -1447,7 +1623,7 @@ namespace Vista
                 };
                 avatar.Controls.Add(new Label
                 {
-                    Text = "AD",
+                    Text = "OP",
                     ForeColor = Color.White,
                     Font = Estilo.F(11, FontStyle.Bold),
                     Dock = DockStyle.Fill,
@@ -1455,11 +1631,10 @@ namespace Vista
                     BackColor = Color.Transparent
                 });
                 userPanel.Controls.Add(avatar);
-                userPanel.Controls.Add(Estilo.Lbl("Administrador", 10.5f, Estilo.Dark, FontStyle.Bold, 134, 21));
-                userPanel.Controls.Add(Estilo.Lbl("Admin", 9, Estilo.Gray, FontStyle.Regular, 134, 43));
+                userPanel.Controls.Add(Estilo.Lbl("Operador", 10.5f, Estilo.Dark, FontStyle.Bold, 134, 21));
+                userPanel.Controls.Add(Estilo.Lbl("Producción", 9, Estilo.Gray, FontStyle.Regular, 134, 43));
                 userPanel.Controls.Add(new IconBox { IconName = "chevD", IconColor = Estilo.Gray, Stroke = 2.2f, Location = new Point(262, 34), Size = new Size(16, 16) });
 
-                // Clic en avatar / nombre / flecha abre el menú del usuario
                 foreach (Control c in userPanel.Controls)
                     if (c != bell) Clickable(c, (s, e) => MostrarMenuUsuario());
                 topbar.Controls.Add(userPanel);
@@ -1487,7 +1662,6 @@ namespace Vista
                 m.Show(Cursor.Position);
             }
 
-            // ---------- Navegación ----------
             void ShowPage(int i)
             {
                 current = i;
@@ -1510,7 +1684,6 @@ namespace Vista
                 RefreshAll();
             }
 
-            // ---------- PÁGINA: INICIO ----------
             Panel BuildInicio()
             {
                 var page = new Panel { BackColor = Estilo.PageBg, AutoScroll = true };
@@ -1528,11 +1701,10 @@ namespace Vista
                 root.RowStyles.Add(new RowStyle(SizeType.Absolute, 150f));
                 root.RowStyles.Add(new RowStyle(SizeType.Absolute, 580f));
 
-                // ----- Saludo + fecha -----
                 var head = new Panel { Dock = DockStyle.Fill, BackColor = Color.Transparent, Margin = Padding.Empty };
                 fechaBox = new FechaBox { Dock = DockStyle.Right, Width = 290 };
                 head.Controls.Add(fechaBox);
-                var greet = Estilo.Lbl("¡Hola, Administrador!", 22, Estilo.Dark, FontStyle.Bold, 2, 0);
+                var greet = Estilo.Lbl("¡Hola, Operador!", 22, Estilo.Dark, FontStyle.Bold, 2, 0);
                 var wave = Estilo.Lbl("👋", 20, Color.FromArgb(240, 165, 30), FontStyle.Regular, 0, 2, "Segoe UI Emoji");
                 EventHandler placeWave = (s, e) => { wave.Left = greet.Right + 2; wave.Top = greet.Top + 2; };
                 greet.SizeChanged += placeWave;
@@ -1540,11 +1712,10 @@ namespace Vista
                 head.Controls.Add(greet);
                 head.Controls.Add(wave);
                 var gris = Color.FromArgb(100, 125, 155);
-                head.Controls.Add(Estilo.Lbl("Aquí puedes visualizar el estado general de la imprenta y gestionar", 11.5f, gris, FontStyle.Regular, 4, 48));
-                head.Controls.Add(Estilo.Lbl("todos los módulos del sistema.", 11.5f, gris, FontStyle.Regular, 4, 70));
+                head.Controls.Add(Estilo.Lbl("Aquí puedes visualizar los pedidos en producción y actualizar", 11.5f, gris, FontStyle.Regular, 4, 48));
+                head.Controls.Add(Estilo.Lbl("su estado a medida que avanza el trabajo.", 11.5f, gris, FontStyle.Regular, 4, 70));
                 root.Controls.Add(head, 0, 0);
 
-                // ----- Tarjetas de resumen -----
                 var stats = new TableLayoutPanel { Dock = DockStyle.Fill, Margin = Padding.Empty, ColumnCount = 4, RowCount = 1, BackColor = Color.Transparent };
                 for (int i = 0; i < 4; i++) stats.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 25f));
                 stats.RowStyles.Add(new RowStyle(SizeType.Percent, 100f));
@@ -1587,8 +1758,8 @@ namespace Vista
                 };
                 cardIns = new StatCard
                 {
-                    Title = "Insumos bajos",
-                    Sub = "Requieren revisión",
+                    Title = "Insumos agotados",
+                    Sub = "Requieren reposición",
                     IconName = "box",
                     IconFg = Color.FromArgb(120, 90, 200),
                     IconBg = Color.FromArgb(227, 219, 250),
@@ -1607,7 +1778,6 @@ namespace Vista
                 stats.Controls.Add(cardIns, 3, 0);
                 root.Controls.Add(stats, 0, 1);
 
-                // ----- Zona principal: izquierda (pedidos + banner) / derecha (gráfico, insumos, máquinas) -----
                 var main = new TableLayoutPanel { Dock = DockStyle.Fill, Margin = Padding.Empty, ColumnCount = 2, RowCount = 1, BackColor = Color.Transparent };
                 main.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 63f));
                 main.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 37f));
@@ -1649,7 +1819,7 @@ namespace Vista
                 Estilo.CrearColumnas(gridRec, new[] { "#", "Cliente", "Trabajo", "Cantidad", "Fecha", "Estado" },
                     new[] { 9f, 20f, 26f, 12f, 14f, 19f }, true);
                 Estilo.WireGrid(gridRec, 5, 6, (id, actual) =>
-                    Acciones.MenuEstado("Pedidos", id, actual, EstadosPedido, RefreshTodo));
+                    Acciones.MenuEstadosPedido(id, actual, RefreshTodo));
                 card.Controls.Add(gridRec);
                 return card;
             }
@@ -1665,9 +1835,9 @@ namespace Vista
                     BorderColor = Color.FromArgb(214, 232, 246)
                 };
                 card.Controls.Add(new IconBox { IconName = "printer", IconColor = Estilo.Teal, Stroke = 1.3f, Location = new Point(30, 24), Size = new Size(82, 82) });
-                card.Controls.Add(Estilo.Lbl("Gestiona todo desde un solo lugar", 13, Estilo.Dark, FontStyle.Bold, 134, 26));
-                card.Controls.Add(Estilo.Lbl("Crea nuevos pedidos, controla la producción y mantén", 9.5f, Estilo.Gray, FontStyle.Regular, 135, 58));
-                card.Controls.Add(Estilo.Lbl("el control de tus recursos.", 9.5f, Estilo.Gray, FontStyle.Regular, 135, 78));
+                card.Controls.Add(Estilo.Lbl("Mantén la producción al día", 13, Estilo.Dark, FontStyle.Bold, 134, 26));
+                card.Controls.Add(Estilo.Lbl("Actualiza el estado de cada pedido y revisa el consumo", 9.5f, Estilo.Gray, FontStyle.Regular, 135, 58));
+                card.Controls.Add(Estilo.Lbl("de insumos y maquinaria.", 9.5f, Estilo.Gray, FontStyle.Regular, 135, 78));
 
                 var btn = new RoundedButton
                 {
@@ -1753,7 +1923,6 @@ namespace Vista
                 return p;
             }
 
-            // ---------- Cargar el dashboard desde SQL Server ----------
             void RefreshAll()
             {
                 try
@@ -1764,12 +1933,12 @@ namespace Vista
                     cardMaq.SetValue(r.MaqOperativas + " / " + r.MaqTotal);
                     cardIns.SetValue(r.InsumosBajos.ToString());
 
-                    var valores = new[] { r.Pendiente, r.EnProduccion, r.Terminado, r.Entregado };
+                    var valores = new[] { r.EnProduccion, r.Terminado, r.Cancelado };
                     donut.SetData(valores, ColoresEstado, r.Total);
                     legend.Values = valores;
                     legend.Invalidate();
 
-                    pendientes = r.Pendiente;
+                    pendientes = r.EnProduccion;
                     insumosBajos = r.InsumosBajos;
                     bell.Badge = (pendientes + insumosBajos) > 0;
                     bell.Invalidate();
@@ -1816,11 +1985,29 @@ namespace Vista
                 {
                     avisoMostrado = true;
                     MessageBox.Show("No se pudo conectar a SQL Server:\n\n" + error +
-                        "\n\nRevisa la cadena de conexión (Db.ConnectionString) y que hayas ejecutado el script ImprexaAdmin.sql.",
+                        "\n\nRevisa la clase Conexion (servidor = DESKTOP-S8LD4U5\\SQLEXPRESS).",
                         "Conexión", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
                 if (ok) avisoMostrado = false;
             }
+        }
+
+        private void InitializeComponent()
+        {
+            this.SuspendLayout();
+            // 
+            // frmOperador
+            // 
+            this.ClientSize = new System.Drawing.Size(282, 253);
+            this.Name = "frmOperador";
+            this.Load += new System.EventHandler(this.frmOperador_Load);
+            this.ResumeLayout(false);
+
+        }
+
+        private void frmOperador_Load(object sender, EventArgs e)
+        {
+
         }
     }
 }

@@ -262,5 +262,24 @@ namespace Vista.GerenteClientes
                                 MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+            CargarClientes(textBox1.Text);
+        }
+
+        private void CargarClientes(string filtro)
+        {
+            try
+            {
+                DataTable dt = Clientes.BuscarCliente(filtro);
+                CargarClientesEnPantalla(dt);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al cargar clientes:\n\n" + ex.Message,
+                    "IMPREXA", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
     }
 }

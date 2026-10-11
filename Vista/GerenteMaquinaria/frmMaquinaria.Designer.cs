@@ -44,9 +44,6 @@
             this.panel7 = new System.Windows.Forms.Panel();
             this.panel8 = new System.Windows.Forms.Panel();
             this.pnlVistaMaquinaria = new System.Windows.Forms.Panel();
-            this.btnActivaa = new System.Windows.Forms.Button();
-            this.btnInactiva = new System.Windows.Forms.Button();
-            this.btnTodos = new System.Windows.Forms.Button();
             this.button3 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.btnAgregar = new System.Windows.Forms.Button();
@@ -217,9 +214,6 @@
             // 
             // pnlVistaMaquinaria
             // 
-            this.pnlVistaMaquinaria.Controls.Add(this.btnActivaa);
-            this.pnlVistaMaquinaria.Controls.Add(this.btnInactiva);
-            this.pnlVistaMaquinaria.Controls.Add(this.btnTodos);
             this.pnlVistaMaquinaria.Controls.Add(this.button3);
             this.pnlVistaMaquinaria.Controls.Add(this.button2);
             this.pnlVistaMaquinaria.Controls.Add(this.btnAgregar);
@@ -229,48 +223,6 @@
             this.pnlVistaMaquinaria.Name = "pnlVistaMaquinaria";
             this.pnlVistaMaquinaria.Size = new System.Drawing.Size(1924, 1033);
             this.pnlVistaMaquinaria.TabIndex = 4;
-            // 
-            // btnActivaa
-            // 
-            this.btnActivaa.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(79)))), ((int)(((byte)(153)))), ((int)(((byte)(193)))));
-            this.btnActivaa.FlatAppearance.BorderSize = 0;
-            this.btnActivaa.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnActivaa.Font = new System.Drawing.Font("Goudy Old Style", 13.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnActivaa.ForeColor = System.Drawing.Color.Black;
-            this.btnActivaa.Location = new System.Drawing.Point(572, 132);
-            this.btnActivaa.Name = "btnActivaa";
-            this.btnActivaa.Size = new System.Drawing.Size(186, 44);
-            this.btnActivaa.TabIndex = 16;
-            this.btnActivaa.Text = "Activos";
-            this.btnActivaa.UseVisualStyleBackColor = false;
-            // 
-            // btnInactiva
-            // 
-            this.btnInactiva.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(79)))), ((int)(((byte)(153)))), ((int)(((byte)(193)))));
-            this.btnInactiva.FlatAppearance.BorderSize = 0;
-            this.btnInactiva.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnInactiva.Font = new System.Drawing.Font("Goudy Old Style", 13.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnInactiva.ForeColor = System.Drawing.Color.Black;
-            this.btnInactiva.Location = new System.Drawing.Point(777, 132);
-            this.btnInactiva.Name = "btnInactiva";
-            this.btnInactiva.Size = new System.Drawing.Size(186, 44);
-            this.btnInactiva.TabIndex = 17;
-            this.btnInactiva.Text = "Libre";
-            this.btnInactiva.UseVisualStyleBackColor = false;
-            // 
-            // btnTodos
-            // 
-            this.btnTodos.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(79)))), ((int)(((byte)(153)))), ((int)(((byte)(193)))));
-            this.btnTodos.FlatAppearance.BorderSize = 0;
-            this.btnTodos.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnTodos.Font = new System.Drawing.Font("Goudy Old Style", 13.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnTodos.ForeColor = System.Drawing.Color.Black;
-            this.btnTodos.Location = new System.Drawing.Point(355, 132);
-            this.btnTodos.Name = "btnTodos";
-            this.btnTodos.Size = new System.Drawing.Size(186, 44);
-            this.btnTodos.TabIndex = 13;
-            this.btnTodos.Text = "Todos";
-            this.btnTodos.UseVisualStyleBackColor = false;
             // 
             // button3
             // 
@@ -374,9 +326,6 @@
         private System.Windows.Forms.Panel panel8;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button btnAgregar;
-        private System.Windows.Forms.Button btnActivaa;
-        private System.Windows.Forms.Button btnInactiva;
-        private System.Windows.Forms.Button btnTodos;
         private System.Windows.Forms.Button button3;
         private System.Windows.Forms.Button button2;
     }

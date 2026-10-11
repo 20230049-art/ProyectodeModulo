@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Modelos.Conexion_DB;
+using Modelos.Entidades;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
@@ -10,6 +12,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using static System.Net.Mime.MediaTypeNames;
 using static Vista.frmInicio.Db;
+using static Vista.frmInicio.RoundedPanel;
 
 namespace Vista
 {
@@ -18,31 +21,59 @@ namespace Vista
         // ASTRID CRUZ 
         public static class Db
         {
-            public static string ConnectionString =
-         @"Server=localhost\SQLEXPRESS;Database=Imprexa;Trusted_Connection=True;TrustServerCertificate=True;";
-
-            public class Pedido
+            // ============================================================
+            //  HELPERS GENÉRICOS (usan Conexion.Conectar())
+            // ============================================================
+            static List<object[]> Leer(string sql, Action<SqlCommand> pars)
             {
-                public int Id;
-                public string Producto;
+                var lista = new List<object[]>();
+                using (var cn = Conexion.Conectar())
+                {
+                    if (cn == null) return lista;
+                    using (var cmd = new SqlCommand(sql, cn))
+                    {
+                        if (pars != null) pars(cmd);
+                        using (var r = cmd.ExecuteReader())
+                            while (r.Read())
+                            {
+                                var o = new object[r.FieldCount];
+                                r.GetValues(o);
+                                lista.Add(o);
+                            }
+                    }
+                }
+                return lista;
+            }
+
+            // ============================================================
+            //  MODELO DE PEDIDO (para las vistas)
+            // ============================================================
+            public class PedidoVista
+            {
+                public int IdPedido;
+                public DateTime FechaPedido;
+                public DateTime? FechaEntrega;
+                public string Descripcion;
                 public int Cantidad;
-                public DateTime Fecha;
-                public string Estado;
+                public decimal Total;
                 public string Cliente;
                 public string Maquinaria;
                 public string Insumo;
+                public string Estado;
                 public string Usuario;
             }
 
-            static Pedido Leer(SqlDataReader r)
+            static PedidoVista LeerPedido(DataRow r)
             {
-                return new Pedido
+                return new PedidoVista
                 {
-                    Id = Convert.ToInt32(r["IdPedido"]),
-                    Fecha = Convert.ToDateTime(r["FechaPedido"]),
-                    Producto = r["DescripcionPedido"].ToString(),
+                    IdPedido = Convert.ToInt32(r["IdPedido"]),
+                    FechaPedido = Convert.ToDateTime(r["FechaPedido"]),
+                    FechaEntrega = r["FechaEntrega"] == DBNull.Value ? (DateTime?)null : Convert.ToDateTime(r["FechaEntrega"]),
+                    Descripcion = r["DescripcionPedido"].ToString(),
                     Cantidad = Convert.ToInt32(r["CantidadPedido"]),
-                    Cliente = r["NombreCliente"].ToString() + " " + r["ApellidoCliente"].ToString(),
+                    Total = Convert.ToDecimal(r["TotalPedido"]),
+                    Cliente = r["NombreCliente"] + " " + r["ApellidoCliente"],
                     Maquinaria = r["NombreMaquinaria"] == DBNull.Value ? "" : r["NombreMaquinaria"].ToString(),
                     Insumo = r["NombreInsumo"] == DBNull.Value ? "" : r["NombreInsumo"].ToString(),
                     Estado = r["NombreEstadoPedido"].ToString(),
@@ -50,87 +81,177 @@ namespace Vista
                 };
             }
 
-            public static void Resumen(out int total, out int proceso, out int entregados)
+            // ============================================================
+            //  RESUMEN DASHBOARD (PedidosImpresion)
+            // ============================================================
+            public static void Resumen(out int total, out int proceso, out int finalizados)
             {
-                total = 0; proceso = 0; entregados = 0;
+                total = proceso = finalizados = 0;
                 const string sql = @"
-            SELECT 
-                COUNT(*),
-                ISNULL(SUM(CASE WHEN IdEstadoPedido = 1 THEN 1 ELSE 0 END), 0),
-                ISNULL(SUM(CASE WHEN IdEstadoPedido = 2 THEN 1 ELSE 0 END), 0)
-            FROM PedidosImpresion
-            WHERE EliminadoPedido = 0";
-                using (var cn = new SqlConnection(ConnectionString))
-                using (var cmd = new SqlCommand(sql, cn))
+                    SELECT
+                        COUNT(*),
+                        ISNULL(SUM(CASE WHEN IdEstadoPedido = 1 THEN 1 ELSE 0 END), 0),
+                        ISNULL(SUM(CASE WHEN IdEstadoPedido = 2 THEN 1 ELSE 0 END), 0)
+                    FROM PedidosImpresion
+                    WHERE EliminadoPedido = 0";
+
+                using (var cn = Conexion.Conectar())
                 {
-                    cn.Open();
+                    if (cn == null) return;
+                    using (var cmd = new SqlCommand(sql, cn))
                     using (var r = cmd.ExecuteReader())
                     {
                         if (r.Read())
                         {
                             total = r.GetInt32(0);
                             proceso = r.GetInt32(1);
-                            entregados = r.GetInt32(2);
+                            finalizados = r.GetInt32(2);
                         }
                     }
                 }
             }
 
-            // Último pedido (usa la vista VistaPedidos)
-            public static Pedido Ultimo()
+            // ============================================================
+            //  ÚLTIMO PEDIDO (usa VistaPedidos)
+            // ============================================================
+            public static PedidoVista Ultimo()
             {
-                const string sql = "SELECT TOP 1 * FROM VistaPedidos ORDER BY IdPedido DESC";
-                using (var cn = new SqlConnection(ConnectionString))
-                using (var cmd = new SqlCommand(sql, cn))
+                var dt = new DataTable();
+                using (var cn = Conexion.Conectar())
                 {
-                    cn.Open();
-                    using (var r = cmd.ExecuteReader())
-                        return r.Read() ? Leer(r) : null;
+                    if (cn == null) return null;
+                    using (var cmd = new SqlCommand("SELECT TOP 1 * FROM VistaPedidos ORDER BY IdPedido DESC", cn))
+                    using (var da = new SqlDataAdapter(cmd))
+                        da.Fill(dt);
                 }
+                return dt.Rows.Count > 0 ? LeerPedido(dt.Rows[0]) : null;
             }
 
-            // Paginación (usa la vista VistaPedidos)
-            public static List<Pedido> Pagina(int pagina, int tamano)
+            // ============================================================
+            //  PAGINACIÓN (usa VistaPedidos)
+            // ============================================================
+            public static List<PedidoVista> Pagina(int pagina, int tamano)
             {
-                var lista = new List<Pedido>();
+                var lista = new List<PedidoVista>();
+                var dt = new DataTable();
                 const string sql = @"
-            SELECT *
-            FROM VistaPedidos
-            ORDER BY IdPedido DESC
-            OFFSET @off ROWS FETCH NEXT @n ROWS ONLY";
-                using (var cn = new SqlConnection(ConnectionString))
-                using (var cmd = new SqlCommand(sql, cn))
+                    SELECT * FROM VistaPedidos
+                    ORDER BY IdPedido DESC
+                    OFFSET @off ROWS FETCH NEXT @n ROWS ONLY";
+
+                using (var cn = Conexion.Conectar())
                 {
-                    cmd.Parameters.AddWithValue("@off", (pagina - 1) * tamano);
-                    cmd.Parameters.AddWithValue("@n", tamano);
-                    cn.Open();
-                    using (var r = cmd.ExecuteReader())
-                        while (r.Read()) lista.Add(Leer(r));
+                    if (cn == null) return lista;
+                    using (var cmd = new SqlCommand(sql, cn))
+                    {
+                        cmd.Parameters.AddWithValue("@off", (pagina - 1) * tamano);
+                        cmd.Parameters.AddWithValue("@n", tamano);
+                        using (var da = new SqlDataAdapter(cmd))
+                            da.Fill(dt);
+                    }
                 }
+                foreach (DataRow r in dt.Rows) lista.Add(LeerPedido(r));
                 return lista;
             }
 
-            // Insertar usando el procedimiento AgregarPedido (ya lo tienes en tu SQL)
+            // ============================================================
+            //  INSERTAR PEDIDO (usa SP oficial AgregarPedido)
+            // ============================================================
             public static int Insertar(string descripcion, int cantidad, decimal total,
                                         int idCliente, int idMaquinaria, int idInsumos, int idPersona)
             {
-                using (var cn = new SqlConnection(ConnectionString))
-                using (var cmd = new SqlCommand("AgregarPedido", cn))
+                using (var cn = Conexion.Conectar())
                 {
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.AddWithValue("@DescripcionPedido", descripcion);
-                    cmd.Parameters.AddWithValue("@CantidadPedido", cantidad);
-                    cmd.Parameters.AddWithValue("@TotalPedido", total);
-                    cmd.Parameters.AddWithValue("@IdCliente", idCliente);
-                    cmd.Parameters.AddWithValue("@IdMaquinaria", idMaquinaria);
-                    cmd.Parameters.AddWithValue("@IdInsumos", idInsumos);
-                    cmd.Parameters.AddWithValue("@IdPersona", idPersona);
-
-                    cn.Open();
-                    using (var r = cmd.ExecuteReader())
+                    if (cn == null) return 0;
+                    using (var cmd = new SqlCommand("AgregarPedido", cn))
                     {
-                        if (r.Read())
-                            return Convert.ToInt32(r["IdPedido"]);
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@DescripcionPedido", descripcion);
+                        cmd.Parameters.AddWithValue("@CantidadPedido", cantidad);
+                        cmd.Parameters.AddWithValue("@TotalPedido", total);
+                        cmd.Parameters.AddWithValue("@IdCliente", idCliente);
+                        cmd.Parameters.AddWithValue("@IdMaquinaria", idMaquinaria);
+                        cmd.Parameters.AddWithValue("@IdInsumos", idInsumos);
+                        cmd.Parameters.AddWithValue("@IdPersona", idPersona);
+
+                        using (var r = cmd.ExecuteReader())
+                        {
+                            if (r.Read())
+                                return Convert.ToInt32(r["IdPedido"]);
+                        }
+                    }
+                }
+                return 0;
+            }
+
+            // ============================================================
+            //  COMBOS PARA EL FORMULARIO DE COTIZACIÓN
+            // ============================================================
+            public static DataTable MaquinariaLibre()
+            {
+                var dt = new DataTable();
+                using (var cn = Conexion.Conectar())
+                {
+                    if (cn == null) return dt;
+                    using (var cmd = new SqlCommand("SELECT IdMaquinaria, NombreMaquinaria FROM VistaMaquinariaLibre", cn))
+                    using (var da = new SqlDataAdapter(cmd))
+                        da.Fill(dt);
+                }
+                return dt;
+            }
+
+            public static DataTable InsumosDisponibles()
+            {
+                var dt = new DataTable();
+                using (var cn = Conexion.Conectar())
+                {
+                    if (cn == null) return dt;
+                    const string sql = @"
+                        SELECT I.IdInsumos, I.NombreInsumo, I.PrecioInsumo, I.CantidadInsumo
+                        FROM Insumos I
+                        WHERE I.EliminadoInsumos = 0 AND I.CantidadInsumo > 0
+                        ORDER BY I.NombreInsumo";
+                    using (var cmd = new SqlCommand(sql, cn))
+                    using (var da = new SqlDataAdapter(cmd))
+                        da.Fill(dt);
+                }
+                return dt;
+            }
+
+            // ============================================================
+            //  OBTENER / CREAR CLIENTE GENÉRICO (para demo)
+            // ============================================================
+            public static int ObtenerOCrearClienteDemo()
+            {
+                // Intenta obtener el primer cliente no eliminado
+                object id = null;
+                using (var cn = Conexion.Conectar())
+                {
+                    if (cn == null) return 0;
+                    using (var cmd = new SqlCommand(
+                        "SELECT TOP 1 IdCliente FROM Cliente WHERE EliminadoCliente = 0 ORDER BY IdCliente", cn))
+                        id = cmd.ExecuteScalar();
+                }
+                if (id != null && id != DBNull.Value) return Convert.ToInt32(id);
+
+                // Si no hay ninguno, crea uno de prueba usando el SP oficial
+                using (var cn = Conexion.Conectar())
+                {
+                    if (cn == null) return 0;
+                    using (var cmd = new SqlCommand("AgregarCliente", cn))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@NombreCliente", "Cliente");
+                        cmd.Parameters.AddWithValue("@ApellidoCliente", "Demo");
+                        cmd.Parameters.AddWithValue("@DUICliente", DBNull.Value);
+                        cmd.Parameters.AddWithValue("@TelefonoCliente", "0000-0000");
+                        cmd.Parameters.AddWithValue("@CorreoCliente", "demo@imprexa.com");
+
+                        using (var r = cmd.ExecuteReader())
+                        {
+                            if (r.Read())
+                                return Convert.ToInt32(r["IdCliente"]);
+                        }
                     }
                 }
                 return 0;
@@ -151,6 +272,13 @@ namespace Vista
                          ControlStyles.OptimizedDoubleBuffer | ControlStyles.ResizeRedraw |
                          ControlStyles.SupportsTransparentBackColor, true);
                 BackColor = Color.Transparent;
+            }
+
+            public class ComboItem
+            {
+                public int Id { get; set; }
+                public string Texto { get; set; }
+                public override string ToString() { return Texto; }
             }
 
             public static GraphicsPath Round(Rectangle r, int radius)
@@ -254,7 +382,7 @@ namespace Vista
             static readonly Color LineCol = Color.FromArgb(225, 233, 242);
 
             // Estado / datos
-            Pedido ultimoPedido;
+            Db.PedidoVista ultimoPedido;
             int totalPedidos, enProceso;
             int paginaActual = 1, tamanoPagina = 5, totalPaginas = 1;
             string ultimoError;
@@ -291,6 +419,7 @@ namespace Vista
                 host = new Panel { Dock = DockStyle.Fill, BackColor = PageBg };
 
                 pages = new[] { BuildInicio(), BuildCotizar(), BuildPedidos() };
+                CargarCombos();
                 foreach (var p in pages) { p.Dock = DockStyle.Fill; host.Controls.Add(p); }
 
                 content.Controls.Add(host);
@@ -408,7 +537,7 @@ namespace Vista
                 {
                     if (!string.IsNullOrEmpty(ultimoError))
                         MessageBox.Show("No se pudo conectar a SQL Server:\n\n" + ultimoError +
-                            "\n\nRevisa la cadena de conexión (Db.ConnectionString) y que el servidor esté encendido.",
+                            "\n\nRevisa la clase Conexion (servidor = DESKTOP-S8LD4U5\\SQLEXPRESS).",
                             "Conexión", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     else
                         RefreshData();
@@ -428,10 +557,10 @@ namespace Vista
                 dot.BringToFront();
 
                 var avatar = new RoundedPanel { Size = new Size(46, 46), Location = new Point(96, 17), Radius = 23, FillColor = Color.FromArgb(11, 60, 90), BorderColor = Color.FromArgb(11, 60, 90) };
-                avatar.Controls.Add(new Label { Text = "AC", ForeColor = Color.White, Font = F(11, FontStyle.Bold), Dock = DockStyle.Fill, TextAlign = ContentAlignment.MiddleCenter, BackColor = Color.Transparent });
+                avatar.Controls.Add(new Label { Text = "CL", ForeColor = Color.White, Font = F(11, FontStyle.Bold), Dock = DockStyle.Fill, TextAlign = ContentAlignment.MiddleCenter, BackColor = Color.Transparent });
                 user.Controls.Add(avatar);
 
-                user.Controls.Add(L("Astrid Cruz", 10.5f, Dark, FontStyle.Bold, 152, 19));
+                user.Controls.Add(L("Cliente", 10.5f, Dark, FontStyle.Bold, 152, 19));
                 user.Controls.Add(L("Cliente", 9, Gray, FontStyle.Regular, 152, 41));
                 user.Controls.Add(L("▾", 11, Gray, FontStyle.Regular, 270, 26));
 
@@ -450,6 +579,7 @@ namespace Vista
                     menu[k].HoverColor = active ? Teal : Color.FromArgb(30, 255, 255, 255);
                     menu[k].Invalidate();
                 }
+                if (i == 1) CargarCombos();   
                 if (i == 2 && IsHandleCreated) RefreshData();
             }
 
@@ -480,7 +610,7 @@ namespace Vista
                     GradientEnd = Color.FromArgb(226, 240, 250),
                     BorderColor = Color.FromArgb(226, 240, 250)
                 };
-                banner.Controls.Add(L("Hola, Astrid 👋", 26, Dark, FontStyle.Bold, 34, 28, 0, "Segoe UI"));
+                banner.Controls.Add(L("Hola, Cliente 👋", 26, Dark, FontStyle.Bold, 34, 28, 0, "Segoe UI"));
                 banner.Controls.Add(L("Aquí puedes gestionar tus solicitudes y dar seguimiento", 12.5f, Color.FromArgb(70, 95, 125), FontStyle.Regular, 34, 88));
                 banner.Controls.Add(L("a tus impresiones.", 12.5f, Color.FromArgb(70, 95, 125), FontStyle.Regular, 34, 114));
                 banner.Paint += (s, e) =>
@@ -587,9 +717,9 @@ namespace Vista
                     var p = ultimoPedido;
                     if (p == null) { MessageBox.Show("Aún no tienes pedidos.", "IMPREXA", MessageBoxButtons.OK, MessageBoxIcon.Information); return; }
                     MessageBox.Show(
-                        "Pedido #" + p.Id.ToString("000") + "\n\nProducto: " + p.Producto +
+                        "Pedido #" + p.IdPedido.ToString("000") + "\n\nProducto: " + p.Descripcion +
                         "\nCantidad: " + p.Cantidad.ToString("N0") + " unidades" +
-                        "\nFecha: " + p.Fecha.ToString("dd/MM/yyyy") +
+                        "\nFecha: " + p.FechaPedido.ToString("dd/MM/yyyy") +
                         "\nEstado: " + p.Estado,
                         "Detalle del pedido", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 };
@@ -664,36 +794,54 @@ namespace Vista
             Panel BuildCotizar()
             {
                 var page = new Panel { BackColor = PageBg, AutoScroll = true };
-                var card = new RoundedPanel { Location = new Point(30, 30), Size = new Size(730, 560) };
+                var card = new RoundedPanel { Location = new Point(30, 30), Size = new Size(730, 520) };
                 int x = 32;
 
                 card.Controls.Add(L("Solicitar cotización", 20, Dark, FontStyle.Bold, x, 22));
                 card.Controls.Add(L("Cuéntanos qué necesitas imprimir y registraremos tu solicitud.", 10.5f, Gray, FontStyle.Regular, x, 62));
 
                 card.Controls.Add(L("Producto", 10, Dark, FontStyle.Bold, x, 108));
-                cboProducto = new ComboBox { DropDownStyle = ComboBoxStyle.DropDownList, Location = new Point(x, 134), Width = 320, Font = F(11) };
-                cboProducto.Items.AddRange(new object[] { "Tarjetas de presentación", "Volantes promocionales", "Folletos trípticos", "Etiquetas adhesivas", "Banners", "Calendarios", "Otro" });
-                cboProducto.SelectedIndex = 0;
+                cboProducto = new ComboBox
+                {
+                    DropDownStyle = ComboBoxStyle.DropDownList,
+                    Location = new Point(x, 134),
+                    Width = 320,
+                    Font = F(11)
+                };
                 card.Controls.Add(cboProducto);
 
                 card.Controls.Add(L("Cantidad (unidades)", 10, Dark, FontStyle.Bold, x + 350, 108));
-                numCantidad = new NumericUpDown { Minimum = 1, Maximum = 1000000, Value = 100, Location = new Point(x + 350, 134), Width = 320, Font = F(11) };
+                numCantidad = new NumericUpDown
+                {
+                    Minimum = 1,
+                    Maximum = 1000000,
+                    Value = 100,
+                    Location = new Point(x + 350, 134),
+                    Width = 320,
+                    Font = F(11)
+                };
                 card.Controls.Add(numCantidad);
 
-                card.Controls.Add(L("Tipo de papel", 10, Dark, FontStyle.Bold, x, 188));
-                cboPapel = new ComboBox { DropDownStyle = ComboBoxStyle.DropDownList, Location = new Point(x, 214), Width = 320, Font = F(11) };
-                cboPapel.Items.AddRange(new object[] { "Couché 150 g", "Bond 75 g", "Opalina", "Cartulina", "Adhesivo" });
-                cboPapel.SelectedIndex = 0;
+                card.Controls.Add(L("Maquina", 10, Dark, FontStyle.Bold, x, 188));
+                cboPapel = new ComboBox
+                {
+                    DropDownStyle = ComboBoxStyle.DropDownList,
+                    Location = new Point(x, 214),
+                    Width = 320,
+                    Font = F(11)
+                };
                 card.Controls.Add(cboPapel);
 
-                card.Controls.Add(L("Acabado", 10, Dark, FontStyle.Bold, x + 350, 188));
-                cboAcabado = new ComboBox { DropDownStyle = ComboBoxStyle.DropDownList, Location = new Point(x + 350, 214), Width = 320, Font = F(11) };
-                cboAcabado.Items.AddRange(new object[] { "Mate", "Brillante", "Sin acabado" });
-                cboAcabado.SelectedIndex = 0;
-                card.Controls.Add(cboAcabado);
-
                 card.Controls.Add(L("Descripción del pedido", 10, Dark, FontStyle.Bold, x, 268));
-                txtDesc = new TextBox { Multiline = true, Location = new Point(x, 294), Size = new Size(670, 120), Font = F(11), ScrollBars = ScrollBars.Vertical, MaxLength = 500 };
+                txtDesc = new TextBox
+                {
+                    Multiline = true,
+                    Location = new Point(x, 294),
+                    Size = new Size(670, 120),
+                    Font = F(11),
+                    ScrollBars = ScrollBars.Vertical,
+                    MaxLength = 500
+                };
                 card.Controls.Add(txtDesc);
 
                 lblError = L("", 10, Color.FromArgb(200, 40, 40), FontStyle.Regular, x, 428);
@@ -725,20 +873,56 @@ namespace Vista
                     lblError.Text = "Describe brevemente lo que necesitas imprimir.";
                     return;
                 }
+                if (cboProducto.SelectedItem == null)
+                {
+                    lblError.Text = "No hay insumos disponibles en el sistema.";
+                    return;
+                }
+                if (cboPapel.SelectedItem == null)
+                {
+                    lblError.Text = "No hay maquinaria disponible en el sistema.";
+                    return;
+                }
                 lblError.Text = "";
-
-                // Armar la descripción con producto + papel + acabado
-                string descripcion = cboProducto.SelectedItem + " | Papel: " + cboPapel.SelectedItem +
-                                     " | Acabado: " + cboAcabado.SelectedItem + " | " + txtDesc.Text.Trim();
 
                 try
                 {
-                    // IDs fijos de prueba (debes tener estos registros en la BD)
-                    int idCliente = 1;   // Cliente genérico
-                    int idMaquinaria = 1;   // Impresora 1
-                    int idInsumos = 1;   // Papel Bond
-                    int idPersona = 1;   // Empleado de prueba
-                    decimal total = 0;   // Aún no se calcula
+                    var insumo = (ComboItem)cboProducto.SelectedItem;
+                    var maquina = (ComboItem)cboPapel.SelectedItem;
+
+                    int idInsumos = insumo.Id;
+                    int idMaquinaria = maquina.Id;
+
+                    string descripcion = insumo.Texto + " | Máquina: " + maquina.Texto +
+                                         " | " + txtDesc.Text.Trim();
+
+                    int idCliente = Db.ObtenerOCrearClienteDemo();
+                    if (idCliente == 0)
+                    {
+                        MessageBox.Show("No hay clientes registrados y no se pudo crear uno de prueba.",
+                            "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+
+                    int idPersona = 0;
+                    var dtPer = new DataTable();
+                    using (var cn = Conexion.Conectar())
+                    {
+                        if (cn != null)
+                            using (var cmd = new SqlCommand(
+                                "SELECT TOP 1 IdPersona FROM Persona WHERE EliminadoPersona = 0 ORDER BY IdPersona", cn))
+                            using (var da = new SqlDataAdapter(cmd))
+                                da.Fill(dtPer);
+                    }
+                    if (dtPer.Rows.Count > 0) idPersona = Convert.ToInt32(dtPer.Rows[0][0]);
+                    if (idPersona == 0)
+                    {
+                        MessageBox.Show("No hay personas registradas para asignar el pedido.",
+                            "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+
+                    decimal total = 0;
 
                     int nuevoId = Db.Insertar(descripcion, (int)numCantidad.Value, total,
                                                idCliente, idMaquinaria, idInsumos, idPersona);
@@ -748,7 +932,7 @@ namespace Vista
 
                     txtDesc.Clear();
                     numCantidad.Value = 100;
-                    cboProducto.SelectedIndex = 0;
+                    CargarCombos();
                     paginaActual = 1;
                     ShowPage(2);
                 }
@@ -805,15 +989,14 @@ namespace Vista
                     {
                         string est = e.Value.ToString();
                         e.CellStyle.Font = F(10.5f, FontStyle.Bold);
-                        e.CellStyle.ForeColor = est == "Entregado" ? Color.FromArgb(22, 150, 90)
-                                              : est == "Pendiente" ? Color.FromArgb(20, 120, 170)
+                        e.CellStyle.ForeColor = est == "Finalizada" ? Color.FromArgb(22, 150, 90)
+                                              : est == "En Proceso" ? Color.FromArgb(20, 120, 170)
                                               : Color.FromArgb(240, 120, 20);
                     }
                 };
 
                 var title = new Label { Text = "Mis pedidos", Dock = DockStyle.Top, Height = 64, Font = F(20, FontStyle.Bold), ForeColor = Dark };
 
-                // El orden importa: primero el grid (Fill), luego el pie (Bottom) y al final el título (Top)
                 page.Controls.Add(grid);
                 page.Controls.Add(BuildPaginacion());
                 page.Controls.Add(title);
@@ -926,14 +1109,42 @@ namespace Vista
                 }
             }
 
+            void CargarCombos()
+            {
+                cboProducto.Items.Clear();
+                var dtIns = Datos.InsumosDisponibles();
+                foreach (DataRow r in dtIns.Rows)
+                {
+                    cboProducto.Items.Add(new ComboItem
+                    {
+                        Id = Convert.ToInt32(r["IdInsumos"]),
+                        Texto = r["NombreInsumo"].ToString()
+                    });
+                }
+                cboProducto.DisplayMember = "Texto";
+                if (cboProducto.Items.Count > 0) cboProducto.SelectedIndex = 0;
+
+                cboPapel.Items.Clear();
+                var dtMaq = Datos.MaquinariaLibre();
+                foreach (DataRow r in dtMaq.Rows)
+                {
+                    cboPapel.Items.Add(new ComboItem
+                    {
+                        Id = Convert.ToInt32(r["IdMaquinaria"]),
+                        Texto = r["NombreMaquinaria"].ToString()
+                    });
+                }
+                cboPapel.DisplayMember = "Texto";
+                if (cboPapel.Items.Count > 0) cboPapel.SelectedIndex = 0;
+            }
             void CargarPagina()
             {
                 var lista = Db.Pagina(paginaActual, tamanoPagina);
 
                 grid.Rows.Clear();
                 foreach (var p in lista)
-                    grid.Rows.Add("#" + p.Id.ToString("000"), p.Producto,
-                                  p.Cantidad.ToString("N0"), p.Fecha.ToString("dd/MM/yyyy"), p.Estado);
+                    grid.Rows.Add("#" + p.IdPedido.ToString("000"), p.Descripcion,
+                                  p.Cantidad.ToString("N0"), p.FechaPedido.ToString("dd/MM/yyyy"), p.Estado);
                 grid.ClearSelection();
 
                 int desde = totalPedidos == 0 ? 0 : (paginaActual - 1) * tamanoPagina + 1;
@@ -956,9 +1167,9 @@ namespace Vista
                     pill.Visible = false;
                     return;
                 }
-                lblUPTitulo.Text = "#" + u.Id.ToString("000") + "  —  " + u.Producto;
+                lblUPTitulo.Text = "#" + u.IdPedido.ToString("000") + "  —  " + u.Descripcion;
                 lblUPCant.Text = "👥  " + u.Cantidad.ToString("N0") + " unidades";
-                lblUPFecha.Text = "📅  " + u.Fecha.ToString("dd/MM/yyyy");
+                lblUPFecha.Text = "📅  " + u.FechaPedido.ToString("dd/MM/yyyy");
                 SetPill(u.Estado);
                 pill.Visible = true;
             }
@@ -973,7 +1184,7 @@ namespace Vista
                 {
                     avisoMostrado = true;
                     MessageBox.Show("No se pudo conectar a SQL Server:\n\n" + error +
-                        "\n\nRevisa la cadena de conexión (Db.ConnectionString) y que hayas ejecutado el script Imprexa.sql.",
+                        "\n\nRevisa la clase Conexion (servidor = DESKTOP-S8LD4U5\\SQLEXPRESS).",
                         "Conexión", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
                 if (ok) avisoMostrado = false;
@@ -999,14 +1210,10 @@ namespace Vista
         private void InitializeComponent()
         {
             this.SuspendLayout();
-            // 
-            // frmInicio
-            // 
             this.ClientSize = new System.Drawing.Size(282, 253);
             this.Name = "frmInicio";
             this.Load += new System.EventHandler(this.frmInicio_Load);
             this.ResumeLayout(false);
-
         }
 
         private void frmInicio_Load(object sender, EventArgs e)

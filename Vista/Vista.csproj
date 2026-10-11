@@ -175,6 +175,12 @@
     <Compile Include="Iniciar Sesion\frmIniciarSesion.Designer.cs">
       <DependentUpon>frmIniciarSesion.cs</DependentUpon>
     </Compile>
+    <Compile Include="Iniciar Sesion\frmPrimerUsuario.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Iniciar Sesion\frmPrimerUsuario.Designer.cs">
+      <DependentUpon>frmPrimerUsuario.cs</DependentUpon>
+    </Compile>
     <Compile Include="InicioGerente\frmInicioGerente.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -192,6 +198,9 @@
     <Compile Include="Utilidad\Redondeo.cs" />
     <EmbeddedResource Include="frmInicio.resx">
       <DependentUpon>frmInicio.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmOperador.resx">
+      <DependentUpon>frmOperador.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="frmPatallaNegra.resx">
       <DependentUpon>frmPatallaNegra.cs</DependentUpon>
@@ -241,6 +250,9 @@
     <EmbeddedResource Include="Iniciar Sesion\frmIniciarSesion.resx">
       <DependentUpon>frmIniciarSesion.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Iniciar Sesion\frmPrimerUsuario.resx">
+      <DependentUpon>frmPrimerUsuario.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="InicioGerente\frmInicioGerente.resx">
       <DependentUpon>frmInicioGerente.cs</DependentUpon>
     </EmbeddedResource>
@@ -288,6 +300,21 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Captura de pantalla 2026-10-10 113754.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Captura de pantalla 2026-10-10 163412.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Captura de pantalla 2026-10-10 163442.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Captura de pantalla 2026-10-10 163509.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Captura de pantalla 2026-10-10 163529.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Captura de pantalla 2026-10-10 163554.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\QuestPDF.2026.9.1\build\net4\QuestPDF.targets" Condition="Exists('..\packages\QuestPDF.2026.9.1\build\net4\QuestPDF.targets')" />

@@ -166,7 +166,6 @@ namespace Vista.GerenteUsuario
         {
             try
             {
-                // Validaciones
                 if (string.IsNullOrWhiteSpace(txtNombre.Text))
                 {
                     MessageBox.Show("Debe ingresar el nombre.", "Campo vacío",
@@ -181,7 +180,6 @@ namespace Vista.GerenteUsuario
                     txtApellidos.Focus(); return;
                 }
 
-                // Validar DUI
                 if (string.IsNullOrWhiteSpace(mtxtDUI.Text))
                 {
                     MessageBox.Show("Debe ingresar el DUI.", "Campo vacío",
@@ -191,7 +189,6 @@ namespace Vista.GerenteUsuario
 
                 string dui = mtxtDUI.Text.Trim();
 
-                // Validar formato del DUI (00000000-0)
                 if (dui.Length != 10 || dui[8] != '-' || !dui.Replace("-", "").All(char.IsDigit))
                 {
                     MessageBox.Show("El DUI debe tener el formato 00000000-0.",

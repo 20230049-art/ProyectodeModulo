@@ -269,5 +269,35 @@ namespace Modelos.Entidades
             }
             return dt;
         }
+
+        public static DataTable BuscarCliente(string texto)
+        {
+            DataTable dt = new DataTable();
+            try
+            {
+                using (SqlConnection connection = Conexion.Conectar())
+                {
+                    if (connection == null) return dt;
+
+                    using (SqlCommand cmd = new SqlCommand("BuscarCliente", connection))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.Add("@busqueda", SqlDbType.VarChar).Value =
+                            string.IsNullOrWhiteSpace(texto) ? "" : texto.Trim();
+
+                        using (SqlDataAdapter ad = new SqlDataAdapter(cmd))
+                        {
+                            ad.Fill(dt);
+                        }
+                    }
+                }
+            }
+            catch (SqlException ex)
+            {
+                MessageBox.Show("Error al buscar clientes:\n" + ex.Message,
+                    "ERROR-SQL-100", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            return dt;
+        }
     }
 }

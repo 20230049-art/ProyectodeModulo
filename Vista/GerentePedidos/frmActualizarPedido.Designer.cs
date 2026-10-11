@@ -31,9 +31,10 @@
             this.panel1 = new System.Windows.Forms.Panel();
             this.label1 = new System.Windows.Forms.Label();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.label8 = new System.Windows.Forms.Label();
+            this.cmbEstado = new System.Windows.Forms.ComboBox();
             this.txtDescripcion = new System.Windows.Forms.TextBox();
             this.label7 = new System.Windows.Forms.Label();
-            this.btnAgregar = new System.Windows.Forms.Button();
             this.txtCantidad = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
@@ -44,9 +45,8 @@
             this.lblClienteValor = new System.Windows.Forms.Label();
             this.cmbCliente = new System.Windows.Forms.ComboBox();
             this.label2 = new System.Windows.Forms.Label();
+            this.btnAgregar = new System.Windows.Forms.Button();
             this.btnCerrar = new System.Windows.Forms.Button();
-            this.label8 = new System.Windows.Forms.Label();
-            this.cmbEstado = new System.Windows.Forms.ComboBox();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.SuspendLayout();
@@ -94,6 +94,25 @@
             this.panel2.Size = new System.Drawing.Size(656, 358);
             this.panel2.TabIndex = 7;
             // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Font = new System.Drawing.Font("Georgia", 13.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label8.Location = new System.Drawing.Point(22, 267);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(80, 27);
+            this.label8.TabIndex = 21;
+            this.label8.Text = "Estado";
+            // 
+            // cmbEstado
+            // 
+            this.cmbEstado.Font = new System.Drawing.Font("Microsoft Tai Le", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cmbEstado.FormattingEnabled = true;
+            this.cmbEstado.Location = new System.Drawing.Point(27, 299);
+            this.cmbEstado.Name = "cmbEstado";
+            this.cmbEstado.Size = new System.Drawing.Size(288, 33);
+            this.cmbEstado.TabIndex = 20;
+            // 
             // txtDescripcion
             // 
             this.txtDescripcion.Font = new System.Drawing.Font("Microsoft Tai Le", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -113,20 +132,6 @@
             this.label7.TabIndex = 16;
             this.label7.Text = "Descripción";
             // 
-            // btnAgregar
-            // 
-            this.btnAgregar.BackColor = System.Drawing.Color.LemonChiffon;
-            this.btnAgregar.FlatAppearance.BorderSize = 0;
-            this.btnAgregar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnAgregar.Font = new System.Drawing.Font("Georgia", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnAgregar.Location = new System.Drawing.Point(125, 525);
-            this.btnAgregar.Name = "btnAgregar";
-            this.btnAgregar.Size = new System.Drawing.Size(228, 39);
-            this.btnAgregar.TabIndex = 4;
-            this.btnAgregar.Text = "Actualizar";
-            this.btnAgregar.UseVisualStyleBackColor = false;
-            this.btnAgregar.Click += new System.EventHandler(this.btnAgregar_Click);
-            // 
             // txtCantidad
             // 
             this.txtCantidad.Font = new System.Drawing.Font("Microsoft Tai Le", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -134,7 +139,6 @@
             this.txtCantidad.Name = "txtCantidad";
             this.txtCantidad.Size = new System.Drawing.Size(268, 33);
             this.txtCantidad.TabIndex = 15;
-            this.txtCantidad.TextChanged += new System.EventHandler(this.txtCantidad_TextChanged);
             // 
             // label6
             // 
@@ -164,7 +168,6 @@
             this.cmbInsumo.Name = "cmbInsumo";
             this.cmbInsumo.Size = new System.Drawing.Size(288, 33);
             this.cmbInsumo.TabIndex = 12;
-            this.cmbInsumo.SelectedIndexChanged += new System.EventHandler(this.cmbInsumo_SelectedIndexChanged);
             // 
             // label4
             // 
@@ -224,6 +227,20 @@
             this.label2.TabIndex = 3;
             this.label2.Text = "Cliente";
             // 
+            // btnAgregar
+            // 
+            this.btnAgregar.BackColor = System.Drawing.Color.LemonChiffon;
+            this.btnAgregar.FlatAppearance.BorderSize = 0;
+            this.btnAgregar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnAgregar.Font = new System.Drawing.Font("Georgia", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnAgregar.Location = new System.Drawing.Point(125, 525);
+            this.btnAgregar.Name = "btnAgregar";
+            this.btnAgregar.Size = new System.Drawing.Size(228, 39);
+            this.btnAgregar.TabIndex = 4;
+            this.btnAgregar.Text = "Actualizar";
+            this.btnAgregar.UseVisualStyleBackColor = false;
+            this.btnAgregar.Click += new System.EventHandler(this.btnAgregar_Click);
+            // 
             // btnCerrar
             // 
             this.btnCerrar.BackColor = System.Drawing.Color.DeepSkyBlue;
@@ -238,25 +255,6 @@
             this.btnCerrar.UseVisualStyleBackColor = false;
             this.btnCerrar.Click += new System.EventHandler(this.btnCerrar_Click);
             // 
-            // label8
-            // 
-            this.label8.AutoSize = true;
-            this.label8.Font = new System.Drawing.Font("Georgia", 13.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label8.Location = new System.Drawing.Point(22, 267);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(80, 27);
-            this.label8.TabIndex = 21;
-            this.label8.Text = "Estado";
-            // 
-            // cmbEstado
-            // 
-            this.cmbEstado.Font = new System.Drawing.Font("Microsoft Tai Le", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.cmbEstado.FormattingEnabled = true;
-            this.cmbEstado.Location = new System.Drawing.Point(27, 299);
-            this.cmbEstado.Name = "cmbEstado";
-            this.cmbEstado.Size = new System.Drawing.Size(288, 33);
-            this.cmbEstado.TabIndex = 20;
-            // 
             // frmActualizarPedido
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -269,6 +267,7 @@
             this.Controls.Add(this.btnCerrar);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "frmActualizarPedido";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "frmActualizarPedido";
             this.TransparencyKey = System.Drawing.SystemColors.ActiveBorder;
             this.Load += new System.EventHandler(this.frmActualizarPedido_Load);
